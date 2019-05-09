@@ -23,7 +23,7 @@ void main()
 
 		for(int i=0;i<100;i=i+1)
 		{
-
+			a++;
 		}
 
 		while(a<100)
@@ -32,4 +32,25 @@ void main()
 		}
 
 		printf("TEST: %d, %d",a,b);
+
+		switch(tmp)
+		{
+			case 'a': 
+			printf("charcater is a");
+			a++;
+			break;
+
+			case 'b': 
+			printf("charcater is b");
+			a=b/2+1;
+			break;
+
+			case 73: 
+			printf("ASCII of charcater is 73");
+			a--;
+			break;
+
+			default: 
+			printf("default");
+		}
 }

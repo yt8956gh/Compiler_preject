@@ -13,23 +13,23 @@ options {
 }
 
 program:
-	VOID MAIN '(' ')' '{' declarations statements '}' {if (TRACEON) System.out.println("VOID MAIN () {declarations statements}");
+	VOID MAIN '(' ')' '{' declarations statements '}' {if (TRACEON) System.out.println("VOID MAIN () {declarations statements}\n");
 		};
 
 declarations:
-	type Identifier ';' declarations { if (TRACEON) System.out.println("declarations: type Identifier : declarations"); 
+	type Identifier ';' declarations { if (TRACEON) System.out.println("declarations: type Identifier : declarations\n"); 
 		}
-	| type Identifier '=' real ';' declarations { if (TRACEON) System.out.println("declarations: type Identifier = REAL: declarations"); 
+	| type Identifier '=' real ';' declarations { if (TRACEON) System.out.println("declarations: type Identifier = REAL: declarations\n"); 
 		}
-	| CHAR Identifier '=' CHARACTER ';' declarations { if (TRACEON) System.out.println("declarations: CHAR Identifier = CHARACTER : declarations"); 
+	| CHAR Identifier '=' CHARACTER ';' declarations { if (TRACEON) System.out.println("declarations: CHAR Identifier = CHARACTER : declarations\n"); 
 		}
-	| CHAR Identifier '[' index ']' '=' STRING ';' declarations { if (TRACEON) System.out.println("declarations: CHAR Identifier [index]=STRING  : declarations"); 
+	| CHAR Identifier '[' index ']' '=' STRING ';' declarations { if (TRACEON) System.out.println("declarations: CHAR Identifier [index]=STRING  : declarations\n"); 
 		}
-	| { if (TRACEON) System.out.println("declarations: ");};
+	| { if (TRACEON) System.out.println("declarations: \n");};
 
 type:
-	INT { if (TRACEON) System.out.println("type: INT"); }
-	| FLOAT {if (TRACEON) System.out.println("type: FLOAT"); };
+	INT { if (TRACEON) System.out.println("type: INT\n"); }
+	| FLOAT {if (TRACEON) System.out.println("type: FLOAT\n"); };
 
 real: Integer_constant | Floating_point_constant;
 index: Integer_constant*;
@@ -63,34 +63,36 @@ compareSign:
 	| L_OP
 	| G_OP;
 
-compare_expression:
-	mult_compare (compareSign mult_compare)* { if (TRACEON) System.out.println("compare_expression: mult_compare ( compareSign mult_compare )* ");
+compareExpr:
+	mult_compare (compareSign mult_compare)* { if (TRACEON) System.out.println("compareExpr: mult_compare ( compareSign mult_compare )* \n");
 		}
 	|;
 
 mult_compare: compare_atom | NOT compare_atom;
 
 compare_atom:
-	Identifier { if (TRACEON) System.out.println("compare_atom: ID");}
-	| real { if (TRACEON) System.out.println("compare_atom: REAL");}
-	| '(' compare_expression ')' { if (TRACEON) System.out.println("compare_atom: compare_expression");
+	Identifier { if (TRACEON) System.out.println("compare_atom: ID\n");}
+	| real { if (TRACEON) System.out.println("compare_atom: REAL\n");}
+	| '(' compareExpr ')' { if (TRACEON) System.out.println("compare_atom:  compareExpr\n");
 		};
 
 statement:
 	Identifier '=' arith_expression ';'
-        { if (TRACEON) System.out.println("statement: Identifier = arith_expression;");}
+        { if (TRACEON) System.out.println("statement: Identifier = arith_expression;\n");}
     | Identifier doubleOperator ';'
-        { if (TRACEON) System.out.println("statement: Identifier doubleOperator;");}
-	| IF '(' compare_expression ')' if_then_statements 
-        { if (TRACEON) System.out.println("statement: IF (compare_expression ) if_then_statements");}
-    | FOR '(' declarations compare_expression ';' statement_in_for ')' for_statement
-        { if (TRACEON) System.out.println("statement: FOR (declarations;compare_expression;statement) for_statement");}
-    | WHILE '('compare_expression')' while_statement
-        { if (TRACEON) System.out.println("statement: WHILE (compare_expression) while_statement");}
+        { if (TRACEON) System.out.println("statement:  Identifier doubleOperator;\n");}
+	| IF '(' compareExpr ')' if_then_statements 
+        { if (TRACEON) System.out.println("statement: IF ( compareExpr ) if_then_statements\n");}
+    | FOR '(' declarations compareExpr ';' statement_in_for ')' for_statement
+        { if (TRACEON) System.out.println("statement: FOR (declarations; compareExpr;statement) for_statement\n");}
+    | WHILE '('compareExpr')' while_statement
+        { if (TRACEON) System.out.println("statement: WHILE ( compareExpr) while_statement\n");}
     | printf_function ';'
-        { if (TRACEON) System.out.println("statement: printf_function");}
+        { if (TRACEON) System.out.println("statement: printf_function\n");}
     | SWITCH '('Identifier')' switch_statement
-        { if (TRACEON) System.out.println("statement: SWITCH (Identifier) switch_statement");}
+        { if (TRACEON) System.out.println("statement: SWITCH (Identifier) switch_statement\n");}
+	| DO '{' statements '}' WHILE'('compareExpr')' ';'
+	   { if (TRACEON) System.out.println("statement: DO {statement} WHILE( compareExpr)\n");}
     ;
 
 statement_in_for:
@@ -98,36 +100,42 @@ statement_in_for:
     | Identifier doubleOperator;
 
 if_then_statements:
-	statement { if (TRACEON) System.out.println("if_then_statements :statements");}
-	| '{' statements '}' else_statement { if (TRACEON) System.out.println("if_then_statements :{statements } else_statement");
+	statement { if (TRACEON) System.out.println("if_then_statements:  statements\n");}
+	| '{' statements '}' else_statement { if (TRACEON) System.out.println("if_then_statements :  {statements } else_statement\n");
 		};
 
 else_statement:
-	ELSE '{' statements '}' { if (TRACEON) System.out.println("else_statement :{statements } ");}
+	ELSE '{' statements '}' { if (TRACEON) System.out.println("else_statement : {statements } \n");}
 	|;
 
 for_statement:
-    statement { if (TRACEON) System.out.println("for_statements :statements");}
-	| '{' statements '}'{ if (TRACEON) System.out.println("for_statements :{statements } else_statement");};
+    statement { if (TRACEON) System.out.println("for_statements : statements\n");}
+	| '{' statements '}'{ if (TRACEON) System.out.println("for_statements : {statements } else_statement\n");};
 
 while_statement:
-    statement { if (TRACEON) System.out.println("for_statements :statements");}
-	| '{' statements '}'{ if (TRACEON) System.out.println("for_statements :{statements } else_statement");};
+    statement { if (TRACEON) System.out.println("while_statements : statements\n");}
+	| '{' statements '}'{ if (TRACEON) System.out.println("while_statements : {statements } else_statement\n");};
 
 printf_function:
     PRINTF '(' STRING (','Identifier)* ')'
-    { if (TRACEON) System.out.println("printf_function: PRINTF '(' STRING (','Identifier)* ')'");}
+    { if (TRACEON) System.out.println("printf_function:  PRINTF (STRING (,Identifier)* )\n");}
     ;
 
 switch_statement:
-    '{' my_cases '}'{ if (TRACEON) System.out.println("for_statements :{statements } else_statement");};
+    '{' my_cases '}'{ if (TRACEON) System.out.println("switch_statement : {my_cases }\n");};
 
 my_case:
     'case' (CHARACTER|real) ':' statements 'break;'?
-        { if (TRACEON) System.out.println("case: case (CHARACTER|real) : statements break;?");}
-    | 'default: ' statements;
+        { if (TRACEON) System.out.println("my_case: case (CHARACTER|real) : statements break;?\n");}
+    | 'default: ' statements
+	{ if (TRACEON) System.out.println("my_case: default: statements \n");};
 
-my_cases: my_case my_cases|;
+my_cases: my_case my_cases	{ if (TRACEON) System.out.println("my_cases: my_case my_cases\n");}
+	|;
+
+
+
+
 
 /* description of the tokens */
 FLOAT: 'float';
@@ -140,6 +148,7 @@ ELSE: 'else';
 FOR: 'for';
 WHILE: 'while';
 SWITCH: 'switch';
+DO: 'do';
 
 
 EQ_OP: '==';
