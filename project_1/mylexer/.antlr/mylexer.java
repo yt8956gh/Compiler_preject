@@ -1,4 +1,4 @@
-// Generated from /home/nian/Downloads/compiler/Java-example1/mylexer.g by ANTLR 4.7.1
+// Generated from /home/nian/git/Compiler_preject/project_1/mylexer/mylexer.g by ANTLR 4.7.1
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

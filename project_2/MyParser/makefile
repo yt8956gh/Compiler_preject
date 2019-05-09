@@ -8,3 +8,7 @@ test:
 clear:
 	rm -f *.class *.tokens myC*.java
 
+run:
+	make clear
+	make
+	make test
