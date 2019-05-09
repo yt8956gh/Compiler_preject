@@ -1,13 +1,13 @@
 import org.antlr.runtime.*;
 
-public class testMyC {
+public class testParser {
 	public static void main(String[] args) throws Exception {
 
       CharStream input = new ANTLRFileStream(args[0]);
-      myC_newLexer lexer = new myC_newLexer(input);
+      myParserLexer lexer = new myParserLexer(input);
       CommonTokenStream tokens = new CommonTokenStream(lexer);
  
-      myC_newParser parser = new myC_newParser(tokens);
+      myParserParser parser = new myParserParser(tokens);
       parser.program();
 	}
 }

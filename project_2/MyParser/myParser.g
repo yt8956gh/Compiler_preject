@@ -1,4 +1,4 @@
-grammar myC_new;
+grammar myParser;
 
 options {
 	language = Java;
