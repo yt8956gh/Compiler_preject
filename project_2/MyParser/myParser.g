@@ -117,7 +117,7 @@ while_statement:
 	| '{' statements '}'{ if (TRACEON) System.out.println("while_statements : {statements } else_statement\n");};
 
 printf_function:
-    PRINTF '(' STRING (','Identifier)* ')'
+    PRINTF '(' STRING (','(arith_expression|STRING))* ')'
     { if (TRACEON) System.out.println("printf_function:  PRINTF (STRING (,Identifier)* )\n");}
     ;
 

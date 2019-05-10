@@ -7,6 +7,9 @@ void main()
 		a = b+1;
 		if (a) { a = (2+4)-3; }
 
+		printf("%d",a);
+		printf("%s %s %d \n","TEST",":",a+b*12)
+
 		switch(tmp)
 		{
 			case 'a': 
