@@ -118,7 +118,7 @@ while_statement:
 
 printf_function:
     PRINTF '(' STRING (','(arith_expression|STRING))* ')'
-    { if (TRACEON) System.out.println("printf_function:  PRINTF (STRING (,Identifier)* )\n");}
+    { if (TRACEON) System.out.println("printf_function:  PRINTF (STRING (,(arith_expression|STRING))* )\n");}
     ;
 
 switch_statement:

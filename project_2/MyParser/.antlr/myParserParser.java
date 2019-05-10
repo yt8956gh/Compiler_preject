@@ -1594,7 +1594,7 @@ public class myParserParser extends Parser {
 			}
 			setState(307);
 			match(T__1);
-			 if (TRACEON) System.out.println("printf_function:  PRINTF (STRING (,Identifier)* )\n");
+			 if (TRACEON) System.out.println("printf_function:  PRINTF (STRING (,(arith_expression|STRING))* )\n");
 			}
 		}
 		catch (RecognitionException re) {
