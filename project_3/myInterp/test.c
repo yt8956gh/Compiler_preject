@@ -15,7 +15,7 @@ void main()
 		}
 
 
-		printf("INT: a=%d, b=%d     FLOAT: a=%d, b=%d", a, b, a, b);
+		printf("INT: a=%d, b=%d     FLOAT: a=%f, b=%f", a, b, a, b);
 
 		if(b>123) {lalala=1;}
 

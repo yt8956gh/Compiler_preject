@@ -724,20 +724,39 @@ public class myInterpParser extends Parser {
 					{
 							String tmp = new String((((Func_no_return_stmtContext)_localctx).STRING_LITERAL!=null?((Func_no_return_stmtContext)_localctx).STRING_LITERAL.getText():null));
 							tmp = tmp.substring(1,tmp.length()-1 ); //remove quotation mark
-							int ret=1;
+							int retD=1,retF=1;
 							int index=0;
 
-							while(ret>0)
+							while(retD!=-1 || retF!=-1)
 							{
-									ret = tmp.indexOf("\%d");
+									retD = tmp.indexOf("\%d");
+									retF = tmp.indexOf("\%f");
 
-									if(ret>0) tmp = tmp.replace("\%d",String.valueOf(Math.round(args.get(index++))));
-								
-									ret = tmp.indexOf("\%f");
+									if(TRACEON)
+									{
+											System.out.println("retD: "+retD);
+											System.out.println("retF: "+retF);
+									}
+									
+									if(index>=args.size()) 
+									{
+											if(retD!=-1 || retF!=-1)System.out.println("ERROR:  Number of argument  in printf is too less .");
+											break;
+									}
 
-									if(ret>0)	tmp=tmp.replaceFirst("\%f", String.valueOf(args.get(index) ) );
+
+									if(retD!=-1 && (retF==-1 || retD<retF))
+									{
+												tmp = tmp.replaceFirst("\%d",String.valueOf(Math.round(args.get(index++))));
+									}
+									else	if(retF!=-1 && (retD==-1 || retF<retD))
+									{
+												tmp = tmp.replaceFirst("\%f", String.valueOf(args.get(index++) ) );
+									}
+									else{
+										    System.out.println("ERROR: Number of argument in printf is too more.");
+									}
 							}
-
 							System.out.println(tmp);
 					}
 					else if ((((Func_no_return_stmtContext)_localctx).Identifier!=null?((Func_no_return_stmtContext)_localctx).Identifier.getText():null).equals("scanf"))
