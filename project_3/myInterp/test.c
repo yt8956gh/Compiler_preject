@@ -3,7 +3,13 @@ void main()
 		int a;
 		float b;
 
-		b=12;
+		b=12.5;
+
+		printf("b is %d in INT.",b);
+		printf("b is %f in FLOAT.",b);
+
+
+
 		a = b+2*(100-1);
 
 		if(a>b){

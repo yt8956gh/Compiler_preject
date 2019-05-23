@@ -48,7 +48,7 @@ if_stmt:
 if_then_stmt
 	returns[int exec_flag]:
 	IF '(' cond_expression ')' block_stmt { 
-                  $exec_flag = $cond_expression.result;
+                  //$exec_flag = $cond_expression.result;
               };
 
 if_else_stmt[int flag]:
@@ -62,13 +62,25 @@ if_else_stmt[int flag]:
 block_stmt: '{' statements '}' { if (TRACEON) System.out.println("block_stmt");};
 
 assign_stmt:
-	Identifier '=' arith_expression {memory.put($Identifier.text, new Integer($arith_expression.result));
+	Identifier '=' arith_expression {memory.put($Identifier.text, new Float($arith_expression.result));
         if (TRACEON)  System.out.println("assign_stmt:" + $Identifier.text +" <- " + $arith_expression.result); };
 
 func_no_return_stmt
-@init{List<Float> args=new ArrayList<Float>(); }
-: Identifier '(' STRING_LITERAL (','arg
-{ if (TRACEON) {System.out.println($arg.value);}   args.add($arg.value);}     )*')'
+@init{
+	
+	List<Float> args=new ArrayList<Float>(); 
+	List<String> refs=new ArrayList<String>(); 
+}
+: Identifier '(' STRING_LITERAL 
+
+(','arg
+{ if(TRACEON){System.out.println($arg.value);}  args.add($arg.value); }
+
+|','refs
+{ if(TRACEON){System.out.println($arg.value);}  refs.add($refs.argName); }
+
+
+)*')'
 {
 		if(TRACEON){
 					System.out.println("Function NAME:" +$Identifier.text);
@@ -101,7 +113,7 @@ func_no_return_stmt
 
 						if(retD!=-1 && (retF==-1 || retD<retF))
 						{
-									tmp = tmp.replaceFirst("\%d",String.valueOf(Math.round(args.get(index++))));
+									tmp = tmp.replaceFirst("\%d",String.valueOf((int)Math.floor(args.get(index++))));
 						}
 						else	if(retF!=-1 && (retD==-1 || retF<retD))
 						{
@@ -117,13 +129,14 @@ func_no_return_stmt
 		{
 		   	System.out.println("SCANF: ");
 		}
-
 };
 
 arg returns [float value] : arith_expression{$value=$arith_expression.result;};
 
+refs returns [String argName] : '&'Identifier{$argName=$Identifier.text;};
+
 cond_expression
-	returns[int result]:
+	returns[float result]:
 	a = arith_expression { $result = $a.result;}
 	(
 		RelationOP b = arith_expression { 
@@ -162,29 +175,29 @@ cond_expression
 	)* {if(TRACEON){System.out.println("result:"+$result);} };
 
 arith_expression
-	returns[int result]:
+	returns[Float result]:
 	a = multExpr { $result=$a.result; } (
 		'+' b = multExpr {$result = $result+$b.result;}
 		| '-' c = multExpr {$result = $result-$c.result;}
 	)*;
 
 multExpr
-	returns[int result]:
+	returns[Float result]:
 	a = signExpr { $result=$a.result; } (
 		'*' b = signExpr {$result = $result*$b.result;}
 		| '/' c = signExpr {$result = $result/$c.result;}
 	)*;
 
 signExpr
-	returns[int result]:
+	returns[Float result]:
 	a = primaryExpr { $result=$a.result; }
 	| '-' primaryExpr;
 
 primaryExpr
-	returns[int result]:
-	Integer_constant { $result=Integer.parseInt($Integer_constant.text); }
-	| Floating_point_constant
-	| Identifier { $result =  (Integer)memory.get($Identifier.text); }
+	returns[Float result]:
+	Integer_constant { $result=Float.parseFloat($Integer_constant.text); }
+	| Floating_point_constant { $result = Float.parseFloat($Floating_point_constant.text); }
+	| Identifier { $result =  (Float)memory.get($Identifier.text); }
 	| '&' Identifier
 	| '(' arith_expression ')' {$result=$arith_expression.result;};
 
