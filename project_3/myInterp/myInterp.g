@@ -6,11 +6,13 @@ options {
 
 @header {
     import java.util.HashMap;
+		import java.util.Scanner;
 }
 
 @members {
     boolean TRACEON = false;
     HashMap memory = new HashMap();
+		HashMap dataType = new HashMap();
 }
 
 program:
@@ -19,9 +21,9 @@ program:
         };
 
 declarations:
-	type Identifier ';' declarations { if (TRACEON)
-	           System.out.println("declarations: type Identifier : declarations");
-              }
+	type Identifier ';' declarations {
+		 if (TRACEON) {System.out.println("declarations: type Identifier : declarations");}
+		  dataType.put($Identifier.text, new String($type.text));}
 	| { if (TRACEON)
                     System.out.println("declarations: ");
 			  };
@@ -71,15 +73,17 @@ func_no_return_stmt
 	List<Float> args=new ArrayList<Float>(); 
 	List<String> refs=new ArrayList<String>(); 
 }
-: Identifier '(' STRING_LITERAL 
-
-(','arg
-{ if(TRACEON){System.out.println($arg.value);}  args.add($arg.value); }
-
-|','refs
-{ if(TRACEON){System.out.println($arg.value);}  refs.add($refs.argName); }
-
-
+: Identifier '(' STRING_LITERAL (','arg
+{
+			if($arg.mode==1){
+			 	if(TRACEON)	{System.out.println($arg.argName);}  
+				refs.add($arg.argName);
+			}
+			else{
+				if(TRACEON)	{System.out.println($arg.value);}  
+				args.add($arg.value); 
+			}
+ }
 )*')'
 {
 		if(TRACEON){
@@ -127,13 +131,87 @@ func_no_return_stmt
 		}
 		else if ($Identifier.text.equals("scanf"))
 		{
-		   	System.out.println("SCANF: ");
-		}
+		   	if(TRACEON)	System.out.println("SCANF: ");
+				String str = new String($STRING_LITERAL.text), argType=null;				
+				str = str.substring(1,str.length()-1 ); //remove quotation mark
+				int retD=1,retF=1,index=0,tmpInt=0;
+				float tmpFloat=0.0f;
+				Scanner scanner = new Scanner(System.in);
+
+				for(int i=0;i<refs.size();i++)
+				{
+						System.out.println("REFS: "+refs.get(i));
+				}
+
+				while(retD!=-1 || retF!=-1)
+				{
+						retD = str.indexOf("\%d");
+						retF = str.indexOf("\%f");
+
+
+						if(TRACEON)
+						{
+								System.out.println("retD: "+retD);
+								System.out.println("retF: "+retF);
+						}
+						
+						if(index>=refs.size()) 
+						{
+								if(retD!=-1 || retF!=-1)System.out.println("ERROR:  Number of argument  in printf is too less .");
+								break;
+						}
+
+						System.out.println("INDEX: "+index);
+
+
+						if(retD!=-1 && (retF==-1 || retD<retF)) // for int 
+						{
+									tmpInt=scanner.nextInt();
+									argType = (String)dataType.get(refs.get(index));
+
+									tmpFloat = (float) tmpInt;
+
+									if(argType.equals("int")){
+											memory.put(refs.get(index), tmpFloat);
+									}
+									else{
+											memory.put(refs.get(index), tmpFloat);
+									}
+
+									str = str.substring(retD+2,str.length());
+
+									index++;
+
+										System.out.println("IN INT");
+						}
+						else	if(retF!=-1 && (retD==-1 || retF<retD)) // for float
+						{
+									tmpFloat=scanner.nextFloat();
+
+									argType = (String)dataType.get(refs.get(index));
+
+									if(argType.equals("int")){
+												memory.put(refs.get(index), new Float(Math.floor(tmpFloat)));
+									}
+									else{
+												memory.put(refs.get(index), new Float(tmpFloat));
+									}
+
+								 str = str.substring(retF+2,str.length());
+								System.out.println("STR:"+str);
+
+								index++;
+						}
+						else{
+							    System.out.println("ERROR: Number of argument in printf is too more.");
+						}
+				}
+	 	} //else-if 
 };
 
-arg returns [float value] : arith_expression{$value=$arith_expression.result;};
-
-refs returns [String argName] : '&'Identifier{$argName=$Identifier.text;};
+arg returns [float value, String argName, int mode] : arith_expression{$value=$arith_expression.result; $mode=0;}
+|'&'Identifier{$argName=$Identifier.text; $mode=1;}
+;
 
 cond_expression
 	returns[float result]:
@@ -198,7 +276,6 @@ primaryExpr
 	Integer_constant { $result=Float.parseFloat($Integer_constant.text); }
 	| Floating_point_constant { $result = Float.parseFloat($Floating_point_constant.text); }
 	| Identifier { $result =  (Float)memory.get($Identifier.text); }
-	| '&' Identifier
 	| '(' arith_expression ')' {$result=$arith_expression.result;};
 
 /* description of the tokens */

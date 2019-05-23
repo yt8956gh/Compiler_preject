@@ -20,10 +20,20 @@ void main()
 			a=b+123;
 		}
 
+		scanf("%d%f",&a,&b);
+
+
+		printf("INT: a=%d, b=%d     FLOAT: a=%f, b=%f", a, b, a, b);
+
+
+		scanf("%d%f",&b,&a);
+
 
 		printf("INT: a=%d, b=%d     FLOAT: a=%f, b=%f", a, b, a, b);
 
 		if(b>123) {lalala=1;}
 
 		printf("Winnie the pooh is cute");
+
+		
 }
