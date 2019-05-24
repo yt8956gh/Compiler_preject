@@ -16,8 +16,8 @@ options {
 }
 
 program:
-	VOID MAIN '(' ')' '{' declarations statements '}' { if (TRACEON)
-		      System.out.println("VOID MAIN () {declarations statements}");
+	VOID MAIN '(' ')' '{' declarations statements[1] '}' { if (TRACEON)
+		      System.out.println("VOID MAIN () {declarations statements[1]}");
         };
 
 declarations:
@@ -33,41 +33,38 @@ type:
 	| CHAR
 	| FLOAT {if (TRACEON) System.out.println("type: FLOAT"); };
 
-statements: statement statements |;
+statements[int flag]: statement[flag] statements[flag] |;
 
-statement:
-	assign_stmt ';'
-	| if_stmt
-	| func_no_return_stmt ';'
-	| for_stmt;
+statement[int flag]:
+	assign_stmt[flag] ';'
+	| if_stmt[flag]
+	| func_no_return_stmt[flag] ';';
 
-for_stmt:
-	FOR '(' assign_stmt ';' cond_expression ';' assign_stmt ')' block_stmt;
 
-if_stmt:
-	if_then_stmt if_else_stmt[$if_then_stmt.exec_flag];
+if_stmt[int flag]
+@init{int if_else_stmt_flag=0; }:
+	if_then_stmt{ if($if_then_stmt.exec_flag==0){if_else_stmt_flag=1; } } if_else_stmt[if_else_stmt_flag];
 
 if_then_stmt
 	returns[int exec_flag]:
-	IF '(' cond_expression ')' block_stmt { 
-                  //$exec_flag = $cond_expression.result;
-              };
+	IF '(' cond_expression ')' { $exec_flag = (int)$cond_expression.result; } block_stmt[$exec_flag];
 
 if_else_stmt[int flag]:
-	ELSE block_stmt {
+	ELSE block_stmt[flag] {
                   if (flag > 0) { System.out.println("Here\n"); }
                   System.out.println(flag);
 
               }
 	|;
 
-block_stmt: '{' statements '}' { if (TRACEON) System.out.println("block_stmt");};
+block_stmt[int flag]: '{' statements[flag] '}' { if (TRACEON) System.out.println("Flag["+flag+"] block_stmt");};
 
-assign_stmt:
-	Identifier '=' arith_expression {memory.put($Identifier.text, new Float($arith_expression.result));
-        if (TRACEON)  System.out.println("assign_stmt:" + $Identifier.text +" <- " + $arith_expression.result); };
+assign_stmt[int flag]:
+	Identifier '=' arith_expression {
+				if (flag!=0) {memory.put($Identifier.text, new Float($arith_expression.result));}
+        if (TRACEON)  {System.out.println("Flag["+flag+"]assign_stmt:" + $Identifier.text +" <- " + $arith_expression.result); }};
 
-func_no_return_stmt
+func_no_return_stmt[int flag]
 @init{
 	
 	List<Float> args=new ArrayList<Float>(); 
@@ -87,10 +84,14 @@ func_no_return_stmt
 )*')'
 {
 		if(TRACEON){
-					System.out.println("Function NAME:" +$Identifier.text);
+					System.out.println("Flag["+flag+"]Function NAME:" +$Identifier.text);
 		}
-	
-		if($Identifier.text.equals("printf"))
+
+		if(flag==0)
+		{
+			System.out.println($Identifier.text+": not work.");
+		}
+		else if($Identifier.text.equals("printf"))
 		{
 				String tmp = new String($STRING_LITERAL.text);
 				tmp = tmp.substring(1,tmp.length()-1 ); //remove quotation mark
