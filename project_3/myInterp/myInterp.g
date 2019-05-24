@@ -128,7 +128,23 @@ func_no_return_stmt[int flag]
 							    System.out.println("ERROR: Number of argument in printf is too more.");
 						}
 				}
-				System.out.println(tmp);
+
+				int newLineIndex=0;
+				String fragment=null;
+
+				while(newLineIndex!=-1){
+
+						newLineIndex = tmp.indexOf("\\n");
+
+						if(newLineIndex==-1) {fragment = tmp;}
+						else{
+							fragment = tmp.substring(0,newLineIndex);
+							tmp = tmp.substring(newLineIndex+2, tmp.length());
+						}
+						
+						System.out.println(fragment);
+				}
+				
 		}
 		else if ($Identifier.text.equals("scanf"))
 		{
