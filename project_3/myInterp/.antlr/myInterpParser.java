@@ -506,10 +506,13 @@ public class myInterpParser extends Parser {
 				setState(87);
 				block_stmt(flag);
 
-				                  if (flag > 0) { System.out.println("Here\n"); }
-				                  System.out.println(flag);
 
-				              
+								if(TRACEON)
+								{
+										 if (flag > 0) { System.out.println("Here\n"); }
+				             System.out.println(flag);
+								}
+
 				}
 				break;
 			case T__3:
@@ -752,11 +755,6 @@ public class myInterpParser extends Parser {
 							float tmpFloat=0.0f;
 							Scanner scanner = new Scanner(System.in);
 
-							for(int i=0;i<refs.size();i++)
-							{
-									System.out.println("REFS: "+refs.get(i));
-							}
-
 							while(retD!=-1 || retF!=-1)
 							{
 									retD = str.indexOf("\%d");
@@ -767,16 +765,14 @@ public class myInterpParser extends Parser {
 									{
 											System.out.println("retD: "+retD);
 											System.out.println("retF: "+retF);
+											System.out.println("INDEX: "+index);
 									}
 									
 									if(index>=refs.size()) 
 									{
-											if(retD!=-1 || retF!=-1)System.out.println("ERROR:  Number of argument  in printf is too less .");
+											if(retD!=-1 || retF!=-1)System.out.println("ERROR:  Number of argument  in scanf is too less .");
 											break;
 									}
-
-									System.out.println("INDEX: "+index);
-
 
 									if(retD!=-1 && (retF==-1 || retD<retF)) // for int 
 									{
@@ -795,8 +791,6 @@ public class myInterpParser extends Parser {
 												str = str.substring(retD+2,str.length());
 
 												index++;
-
-													System.out.println("IN INT");
 									}
 									else	if(retF!=-1 && (retD==-1 || retF<retD)) // for float
 									{
@@ -812,12 +806,10 @@ public class myInterpParser extends Parser {
 												}
 
 											 str = str.substring(retF+2,str.length());
-											System.out.println("STR:"+str);
-
 											index++;
 									}
 									else{
-										    System.out.println("ERROR: Number of argument in printf is too more.");
+										    System.out.println("ERROR: Number of argument in scanf is too more.");
 									}
 							}
 				 	} //else-if 

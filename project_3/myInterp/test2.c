@@ -1,11 +1,12 @@
 void main()
 {
-		int a, b;
+		int a;
+		int b;
 		float c;
 
 		a=87;
 		b=12;
-		c=2.5
+		c=2.5;
 
 
 		a = b+2*(100-c);
