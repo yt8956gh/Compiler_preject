@@ -279,8 +279,8 @@ public class EXPmyCompilerParser extends Parser {
 								 the_list.add(((DeclarationsContext)_localctx).type.attr_type);
 								 the_list.add(storageIndex);
 								 storageIndex = storageIndex + 1;
-				                 symtab.put((((DeclarationsContext)_localctx).Identifier!=null?((DeclarationsContext)_localctx).Identifier.getText():null), the_list);
-				              
+				             symtab.put((((DeclarationsContext)_localctx).Identifier!=null?((DeclarationsContext)_localctx).Identifier.getText():null), the_list);
+				      
 				}
 				break;
 			case T__3:
@@ -292,7 +292,7 @@ public class EXPmyCompilerParser extends Parser {
 
 							     if (TRACEON)
 				                    System.out.println("declarations: ");
-							  
+						
 				}
 				break;
 			default:

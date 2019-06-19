@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 myCompiler.g 2019-06-19 18:24:54
+// $ANTLR 3.5.2 myCompiler.g 2019-06-19 21:28:20
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -297,8 +297,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = FLOAT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:369:6: ( 'float' )
-			// myCompiler.g:369:8: 'float'
+			// myCompiler.g:311:6: ( 'float' )
+			// myCompiler.g:311:7: 'float'
 			{
 			match("float"); 
 
@@ -318,8 +318,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = INT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:370:4: ( 'int' )
-			// myCompiler.g:370:6: 'int'
+			// myCompiler.g:312:4: ( 'int' )
+			// myCompiler.g:312:5: 'int'
 			{
 			match("int"); 
 
@@ -339,8 +339,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = CHAR;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:371:5: ( 'char' )
-			// myCompiler.g:371:7: 'char'
+			// myCompiler.g:313:5: ( 'char' )
+			// myCompiler.g:313:7: 'char'
 			{
 			match("char"); 
 
@@ -360,8 +360,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = MAIN;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:373:5: ( 'main' )
-			// myCompiler.g:373:7: 'main'
+			// myCompiler.g:315:5: ( 'main' )
+			// myCompiler.g:315:7: 'main'
 			{
 			match("main"); 
 
@@ -381,8 +381,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = VOID;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:374:5: ( 'void' )
-			// myCompiler.g:374:7: 'void'
+			// myCompiler.g:316:5: ( 'void' )
+			// myCompiler.g:316:7: 'void'
 			{
 			match("void"); 
 
@@ -402,8 +402,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = IF;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:375:3: ( 'if' )
-			// myCompiler.g:375:5: 'if'
+			// myCompiler.g:317:3: ( 'if' )
+			// myCompiler.g:317:5: 'if'
 			{
 			match("if"); 
 
@@ -423,8 +423,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = ELSE;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:376:5: ( 'else' )
-			// myCompiler.g:376:7: 'else'
+			// myCompiler.g:318:5: ( 'else' )
+			// myCompiler.g:318:7: 'else'
 			{
 			match("else"); 
 
@@ -444,8 +444,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = FOR;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:377:4: ( 'for' )
-			// myCompiler.g:377:6: 'for'
+			// myCompiler.g:319:4: ( 'for' )
+			// myCompiler.g:319:6: 'for'
 			{
 			match("for"); 
 
@@ -465,7 +465,7 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = RelationOP;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:379:11: ( '>' | '>=' | '<' | '<=' | '==' | '!=' )
+			// myCompiler.g:321:11: ( '>' | '>=' | '<' | '<=' | '==' | '!=' )
 			int alt1=6;
 			switch ( input.LA(1) ) {
 			case '>':
@@ -511,40 +511,40 @@ public class myCompilerLexer extends Lexer {
 			}
 			switch (alt1) {
 				case 1 :
-					// myCompiler.g:379:13: '>'
+					// myCompiler.g:321:13: '>'
 					{
 					match('>'); 
 					}
 					break;
 				case 2 :
-					// myCompiler.g:379:19: '>='
+					// myCompiler.g:321:18: '>='
 					{
 					match(">="); 
 
 					}
 					break;
 				case 3 :
-					// myCompiler.g:379:26: '<'
+					// myCompiler.g:321:25: '<'
 					{
 					match('<'); 
 					}
 					break;
 				case 4 :
-					// myCompiler.g:379:32: '<='
+					// myCompiler.g:321:31: '<='
 					{
 					match("<="); 
 
 					}
 					break;
 				case 5 :
-					// myCompiler.g:379:39: '=='
+					// myCompiler.g:321:38: '=='
 					{
 					match("=="); 
 
 					}
 					break;
 				case 6 :
-					// myCompiler.g:379:46: '!='
+					// myCompiler.g:321:45: '!='
 					{
 					match("!="); 
 
@@ -566,8 +566,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = Identifier;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:381:11: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
-			// myCompiler.g:381:13: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+			// myCompiler.g:323:11: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
+			// myCompiler.g:323:12: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -577,7 +577,7 @@ public class myCompilerLexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// myCompiler.g:381:43: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+			// myCompiler.g:323:36: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
 			loop2:
 			while (true) {
 				int alt2=2;
@@ -622,10 +622,10 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = Integer_constant;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:387:17: ( ( '0' .. '9' )+ )
-			// myCompiler.g:387:19: ( '0' .. '9' )+
+			// myCompiler.g:324:17: ( ( '0' .. '9' )+ )
+			// myCompiler.g:324:18: ( '0' .. '9' )+
 			{
-			// myCompiler.g:387:19: ( '0' .. '9' )+
+			// myCompiler.g:324:18: ( '0' .. '9' )+
 			int cnt3=0;
 			loop3:
 			while (true) {
@@ -674,10 +674,10 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = Floating_point_constant;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:388:24: ( ( '0' .. '9' )+ '.' ( '0' .. '9' )+ )
-			// myCompiler.g:388:26: ( '0' .. '9' )+ '.' ( '0' .. '9' )+
+			// myCompiler.g:325:24: ( ( '0' .. '9' )+ '.' ( '0' .. '9' )+ )
+			// myCompiler.g:325:25: ( '0' .. '9' )+ '.' ( '0' .. '9' )+
 			{
-			// myCompiler.g:388:26: ( '0' .. '9' )+
+			// myCompiler.g:325:25: ( '0' .. '9' )+
 			int cnt4=0;
 			loop4:
 			while (true) {
@@ -711,7 +711,7 @@ public class myCompilerLexer extends Lexer {
 			}
 
 			match('.'); 
-			// myCompiler.g:388:41: ( '0' .. '9' )+
+			// myCompiler.g:325:39: ( '0' .. '9' )+
 			int cnt5=0;
 			loop5:
 			while (true) {
@@ -760,11 +760,11 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = STRING_LITERAL;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:390:15: ( '\"' ( EscapeSequence |~ ( '\\\\' | '\"' ) )* '\"' )
-			// myCompiler.g:390:17: '\"' ( EscapeSequence |~ ( '\\\\' | '\"' ) )* '\"'
+			// myCompiler.g:328:5: ( '\"' ( EscapeSequence |~ ( '\\\\' | '\"' ) )* '\"' )
+			// myCompiler.g:328:8: '\"' ( EscapeSequence |~ ( '\\\\' | '\"' ) )* '\"'
 			{
 			match('\"'); 
-			// myCompiler.g:390:21: ( EscapeSequence |~ ( '\\\\' | '\"' ) )*
+			// myCompiler.g:328:12: ( EscapeSequence |~ ( '\\\\' | '\"' ) )*
 			loop6:
 			while (true) {
 				int alt6=3;
@@ -778,14 +778,14 @@ public class myCompilerLexer extends Lexer {
 
 				switch (alt6) {
 				case 1 :
-					// myCompiler.g:390:23: EscapeSequence
+					// myCompiler.g:328:14: EscapeSequence
 					{
 					mEscapeSequence(); 
 
 					}
 					break;
 				case 2 :
-					// myCompiler.g:390:40: ~ ( '\\\\' | '\"' )
+					// myCompiler.g:328:31: ~ ( '\\\\' | '\"' )
 					{
 					if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '!')||(input.LA(1) >= '#' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
 						input.consume();
@@ -820,8 +820,8 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = WS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:392:3: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-			// myCompiler.g:392:5: ( ' ' | '\\t' | '\\r' | '\\n' )
+			// myCompiler.g:331:3: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+			// myCompiler.g:331:4: ( ' ' | '\\t' | '\\r' | '\\n' )
 			{
 			if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
 				input.consume();
@@ -848,12 +848,12 @@ public class myCompilerLexer extends Lexer {
 		try {
 			int _type = COMMENT;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// myCompiler.g:393:8: ( '/*' ( . )* '*/' )
-			// myCompiler.g:393:10: '/*' ( . )* '*/'
+			// myCompiler.g:332:8: ( '/*' ( . )* '*/' )
+			// myCompiler.g:332:9: '/*' ( . )* '*/'
 			{
 			match("/*"); 
 
-			// myCompiler.g:393:15: ( . )*
+			// myCompiler.g:332:14: ( . )*
 			loop7:
 			while (true) {
 				int alt7=2;
@@ -874,7 +874,7 @@ public class myCompilerLexer extends Lexer {
 
 				switch (alt7) {
 				case 1 :
-					// myCompiler.g:393:15: .
+					// myCompiler.g:332:14: .
 					{
 					matchAny(); 
 					}
@@ -902,8 +902,8 @@ public class myCompilerLexer extends Lexer {
 	// $ANTLR start "EscapeSequence"
 	public final void mEscapeSequence() throws RecognitionException {
 		try {
-			// myCompiler.g:395:24: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' ) )
-			// myCompiler.g:396:2: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' )
+			// myCompiler.g:338:5: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' ) )
+			// myCompiler.g:338:9: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' )
 			{
 			match('\\'); 
 			if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||input.LA(1)=='t' ) {

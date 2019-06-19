@@ -1,22 +1,31 @@
 grammar myCompiler;
 
 options {
-	language = Java;
+   language = Java;
 }
 
 @header {
+    // import packages here.
     import java.util.HashMap;
-		import java.util.Scanner;
-	  import java.util.ArrayList;
+    import java.util.ArrayList;
 }
 
 @members {
     boolean TRACEON = false;
-    HashMap memory = new HashMap();
-		HashMap dataType = new HashMap();
-		
-		HashMap<String, ArrayList> symtab = new HashMap<String, ArrayList>();
+
+    // ============================================
+    // Create a symbol table.
+	// ArrayList is easy to extend to add more info. into symbol table.
+	//
+	// The structure of symbol table:
+	// <variable ID, type, memory location>
+	//    - type: the variable type   (please check "enum Type")
+	//    - memory location: the location (locals in VM) the variable will be stored at.
+    // ============================================
+    HashMap<String, ArrayList> symtab = new HashMap<String, ArrayList>();
+
     int labelCount = 0;
+	
 	
 	// storageIndex is used to represent/index the location (locals) in VM.
 	// The first index is 0.
@@ -27,8 +36,9 @@ options {
 
     // Type information.
     public enum Type{
-       INT, FLOAT;
+       INT, FLOAT, CHAR;
     }
+
 
     /*
      * Output prologue.
@@ -44,7 +54,8 @@ options {
        TextCode.add(".limit stack 100");
        TextCode.add(".limit locals 100");
     }
-  
+    
+	
     /*
      * Output epilogue.
      */
@@ -55,6 +66,7 @@ options {
        TextCode.add(".end method");
     }
     
+    
     /* Generate a new label */
     String newLabel()
     {
@@ -62,312 +74,242 @@ options {
        return (new String("L")) + Integer.toString(labelCount);
     } 
     
+    
     public List<String> getTextCode()
     {
        return TextCode;
-    }
+    }			
 }
 
-program:
-	VOID MAIN '(' ')' {
+program: VOID MAIN '(' ')'
+        {
+           /* Output function prologue */
            prologue();
-        } '{' declarations statements[1] '}' { if (TRACEON)
-		      System.out.println("VOID MAIN () {declarations statements}");
-					 epilogue();
-        };
-
-declarations:
-	type Identifier ';' declarations {
-		 if (TRACEON) 
-		 {System.out.println("declarations: type Identifier : declarations");}
-
-		  //dataType.put($Identifier.text, new String($type.text));
-
-			 if (symtab.containsKey($Identifier.text)) 
-			 {
-				    // variable re-declared.
-                    System.out.println("Type Error: " +  $Identifier.getLine() + ": Redeclared identifier.");
-                    System.exit(0);
         }
+
+        '{' 
+           declarations
+           statements
+        '}'
+        {
+		   if (TRACEON)
+		      System.out.println("VOID MAIN () {declarations statements}");
+
+           /* output function epilogue */	  
+           epilogue();
+        }
+        ;
+
+
+declarations: type Identifier ';' declarations
+      {
+			     if (TRACEON)
+	                System.out.println("declarations: type Identifier : declarations");
+
+                 if (symtab.containsKey($Identifier.text)) {
+				    // variable re-declared.
+                    System.out.println("Type Error: " + 
+                                       $Identifier.getLine() + 
+                                       ": Redeclared identifier.");
+                    System.exit(0);
+                 }
                  
 				 /* Add ID and its attr_type into the symbol table. */
 				 ArrayList the_list = new ArrayList();
 				 the_list.add($type.attr_type);
 				 the_list.add(storageIndex);
 				 storageIndex = storageIndex + 1;
-         symtab.put($Identifier.text, the_list);
-
-	}
-	| { if (TRACEON)
+             symtab.put($Identifier.text, the_list);
+      }
+      | 
+		{
+			     if (TRACEON)
                     System.out.println("declarations: ");
-  };
-
-type
-	returns[Type attr_type]:
-	INT { if (TRACEON) System.out.println("type: INT"); $attr_type=Type.INT; }
-	| FLOAT {if (TRACEON) System.out.println("type: FLOAT"); $attr_type=Type.FLOAT; };
-
-statements[int flag]:
-	statement[flag] statements[flag]
-	|;
-
-statement[int flag]:
-	assign_stmt[flag] ';'
-	| if_stmt[flag]
-	| func_no_return_stmt[flag] ';';
-
-if_stmt[int flag]
-	@init {int if_else_stmt_flag=0; }:
-	if_then_stmt { if($if_then_stmt.exec_flag==0){if_else_stmt_flag=1; } } if_else_stmt[if_else_stmt_flag]
-		;
-
-if_then_stmt
-	returns[int exec_flag]:
-	IF '(' cond_expression ')' { $exec_flag = (int)$cond_expression.result; } block_stmt[$exec_flag]
-		;
-
-if_else_stmt[int flag]:
-	ELSE block_stmt[flag] {
-
-				if(TRACEON)
-				{
-						 if (flag > 0) { System.out.println("Here\n"); }
-             System.out.println(flag);
-				}
-}
-	|;
-
-block_stmt[int flag]:
-	'{' statements[flag] '}' { if (TRACEON) System.out.println("Flag["+flag+"] block_stmt");};
-
-assign_stmt[int flag]:
-	Identifier '=' arith_expression {
-				if (flag!=0) {memory.put($Identifier.text, new Float($arith_expression.result));}
-        if (TRACEON)  {System.out.println("Flag["+flag+"]assign_stmt:" + $Identifier.text +" <- " + $arith_expression.result); }
 		};
 
-func_no_return_stmt[int flag]
-	@init {
-	
-	List<Float> args=new ArrayList<Float>(); 
-	List<String> refs=new ArrayList<String>(); 
-}:
-	Identifier '(' STRING_LITERAL (
-		',' arg {
-			if($arg.mode==1){
-			 	if(TRACEON)	{System.out.println($arg.argName);}  
-				refs.add($arg.argName);
-			}
-			else{
-				if(TRACEON)	{System.out.println($arg.value);}  
-				args.add($arg.value); 
-			}
- }
-	)* ')' {
-		if(TRACEON){
-					System.out.println("Flag["+flag+"]Function NAME:" +$Identifier.text);
-		}
 
-		if(flag==0)
-		{
-			System.out.println($Identifier.text+": not work.");
-		}
-		else if($Identifier.text.equals("printf"))
-		{
-				String tmp = new String($STRING_LITERAL.text);
-				tmp = tmp.substring(1,tmp.length()-1 ); //remove quotation mark
-				int retD=1,retF=1;
-				int index=0;
+type
+returns [Type attr_type]
+    : INT { if (TRACEON) System.out.println("type: INT"); attr_type=Type.INT; }
+    | FLOAT {if (TRACEON) System.out.println("type: FLOAT"); attr_type=Type.FLOAT; }
+	;
 
-				while(retD!=-1 || retF!=-1)
-				{
-						retD = tmp.indexOf("\%d");
-						retF = tmp.indexOf("\%f");
+statements:statement statements
+          |
+          ;
 
-						if(TRACEON)
-						{
-								System.out.println("retD: "+retD);
-								System.out.println("retF: "+retF);
-						}
-						
-						if(index>=args.size()) 
-						{
-								if(retD!=-1 || retF!=-1)System.out.println("ERROR:  Number of argument  in printf is too less .");
-								break;
-						}
+statement: assign_stmt ';'
+         | if_stmt
+         | func_no_return_stmt ';'
+         | for_stmt
+         ;
+
+for_stmt: FOR '(' assign_stmt ';'
+                  cond_expression ';'
+				  assign_stmt
+			   ')'
+			      block_stmt
+        ;
+		 
+		 
+if_stmt
+            : if_then_stmt if_else_stmt
+            ;
+
+	   
+if_then_stmt
+            : IF '(' cond_expression ')' block_stmt
+            ;
 
 
-						if(retD!=-1 && (retF==-1 || retD<retF))
-						{
-									tmp = tmp.replaceFirst("\%d",String.valueOf((int)Math.floor(args.get(index++))));
-						}
-						else	if(retF!=-1 && (retD==-1 || retF<retD))
-						{
-									tmp = tmp.replaceFirst("\%f", String.valueOf(args.get(index++) ) );
-						}
-						else{
-							    System.out.println("ERROR: Number of argument in printf is too more.");
-						}
-				}
+if_else_stmt
+            : ELSE block_stmt
+            |
+            ;
 
-				int newLineIndex=0;
-				String fragment=null;
-
-				while(newLineIndex!=-1){
-
-						newLineIndex = tmp.indexOf("\\n");
-
-						if(newLineIndex==-1) {fragment = tmp;}
-						else{
-							fragment = tmp.substring(0,newLineIndex);
-							tmp = tmp.substring(newLineIndex+2, tmp.length());
-						}
-						
-						System.out.println(fragment);
-				}
-				
-		}
-		else if ($Identifier.text.equals("scanf"))
-		{
-		   	if(TRACEON)	System.out.println("SCANF: ");
-				String str = new String($STRING_LITERAL.text), argType=null;				
-				str = str.substring(1,str.length()-1 ); //remove quotation mark
-				int retD=1,retF=1,index=0,tmpInt=0;
-				float tmpFloat=0.0f;
-				Scanner scanner = new Scanner(System.in);
-
-				while(retD!=-1 || retF!=-1)
-				{
-						retD = str.indexOf("\%d");
-						retF = str.indexOf("\%f");
+				  
+block_stmt: '{' statements '}'
+	  ;
 
 
-						if(TRACEON)
-						{
-								System.out.println("retD: "+retD);
-								System.out.println("retF: "+retF);
-								System.out.println("INDEX: "+index);
-						}
-						
-						if(index>=refs.size()) 
-						{
-								if(retD!=-1 || retF!=-1)System.out.println("ERROR:  Number of argument  in scanf is too less .");
-								break;
-						}
+assign_stmt: Identifier '=' arith_expression
+             {
+			   Type the_type;
+			   int the_mem;
+			   
+			   // get the ID's location and type from symtab.			   
+			   the_type = (Type) symtab.get($Identifier.text).get(0);
+			   the_mem = (int) symtab.get($Identifier.text).get(1);
+			   
+			   if (the_type != $arith_expression.attr_type) {
+			      System.out.println("Type error!\n");
+				  System.exit(0);
+			   }
+			   
+			   // issue store insruction:
+               // => store the top element of the operand stack into the locals.
+			   switch (the_type) {
+			   case INT:
+			              TextCode.add("istore " + the_mem);
+			              break;
+			   case FLOAT:
+			              TextCode.add("fstore " + the_mem);
+			              break;
+			   }
+             }
+           ;
 
-						if(retD!=-1 && (retF==-1 || retD<retF)) // for int 
-						{
-									tmpInt=scanner.nextInt();
-									argType = (String)dataType.get(refs.get(index));
+		   
+func_no_return_stmt: Identifier '(' argument ')'
+                   ;
 
-									tmpFloat = (float) tmpInt;
 
-									if(argType.equals("int")){
-											memory.put(refs.get(index), tmpFloat);
-									}
-									else{
-											memory.put(refs.get(index), tmpFloat);
-									}
+argument: arg (',' arg)*
+        ;
 
-									str = str.substring(retD+2,str.length());
-
-									index++;
-						}
-						else	if(retF!=-1 && (retD==-1 || retF<retD)) // for float
-						{
-									tmpFloat=scanner.nextFloat();
-
-									argType = (String)dataType.get(refs.get(index));
-
-									if(argType.equals("int")){
-												memory.put(refs.get(index), new Float(Math.floor(tmpFloat)));
-									}
-									else{
-												memory.put(refs.get(index), new Float(tmpFloat));
-									}
-
-								 str = str.substring(retF+2,str.length());
-								index++;
-						}
-						else{
-							    System.out.println("ERROR: Number of argument in scanf is too more.");
-						}
-				}
-	 	} //else-if 
-};
-
-arg
-	returns[float value, String argName, int mode]:
-	arith_expression {$value=$arith_expression.result; $mode=0;}
-	| '&' Identifier {$argName=$Identifier.text; $mode=1;};
-
+arg: arith_expression
+   | STRING_LITERAL
+   ;
+		   
 cond_expression
-	returns[float result]:
-	a = arith_expression { $result = $a.result;} (
-		RelationOP b = arith_expression { 
-	
-										if($RelationOP.text.equals(">"))
-										{
-												if($result > $b.result) $result = 1;
-                        else $result = 0;
-										}
-										else	if($RelationOP.text.equals(">="))
-										{
-												if($result >= $b.result) $result = 1;
-                        else $result = 0;
-										}
-										else	if($RelationOP.text.equals("<"))
-										{
-												if($result < $b.result) $result = 1;
-                        else $result = 0;
-										}
-											else	if($RelationOP.text.equals("<="))
-										{
-												if($result <= $b.result) $result = 1;
-                        else $result = 0;
-										}
-										else	if($RelationOP.text.equals("=="))
-										{
-												if($result == $b.result) $result = 1;
-                        else $result = 0;
-										}
-										else	if($RelationOP.text.equals("!="))
-										{
-												if($result != $b.result) $result = 1;
-                        else $result = 0;
-										}
-                 }
-	)* {if(TRACEON){System.out.println("result:"+$result);} };
+returns [boolean truth]
+               : a=arith_expression
+			     {
+				    if ($a.attr_type.ordinal() != 0)
+					   truth = true;
+					else
+					   truth = false;
+				 }
+                 (RelationOP arith_expression)*
+               ;
 
+			   
 arith_expression
-	returns[Float result]:
-	a = multExpr { $result=$a.result; } (
-		'+' b = multExpr {$result = $result+$b.result;}
-		| '-' c = multExpr {$result = $result-$c.result;}
-	)*;
+returns [Type attr_type]
+                : a=multExpr { $attr_type = $a.attr_type; }
+                 ( '+' b=multExpr
+                       {
+                              if (($attr_type == Type.INT) &&($b.attr_type == Type.INT))  TextCode.add("iadd");
+                              else TextCode.add("fadd");
+                       }
+                 | '-' c=multExpr
+                      {
+                              if (($attr_type == Type.INT) &&($c.attr_type == Type.INT))  TextCode.add("isub");
+                              else TextCode.add("fsub");
+                      }
+                 )*
+                 ;
 
 multExpr
-	returns[Float result]:
-	a = signExpr { $result=$a.result; } (
-		'*' b = signExpr {$result = $result*$b.result;}
-		| '/' c = signExpr {$result = $result/$c.result;}
-	)*;
+returns [Type attr_type]
+          : a=signExpr { $attr_type=$a.attr_type; }
+          ( '*' b=signExpr
+                       {
+                              if (($attr_type == Type.INT) &&($b.attr_type == Type.INT))  TextCode.add("imul");
+                              else TextCode.add("fmul");
+                       }
+          | '/' c=signExpr
+                      {
+                              if (($attr_type == Type.INT) &&($c.attr_type == Type.INT))  TextCode.add("idiv");
+                              else TextCode.add("fdiv");
+                      }
+	  )*
+	  ;
 
 signExpr
-	returns[Float result]:
-	a = primaryExpr { $result=$a.result; }
-	| '-' primaryExpr;
+returns [Type attr_type]
+        : a=primaryExpr[1] { $attr_type=$a.attr_type;} 
+        | '-' b=primaryExpr[-1] { $attr_type=$b.attr_type;}
+	;
+		  
+primaryExpr[int posneg]
+returns [Type attr_type] 
+           : Integer_constant
+		     {
+			    $attr_type = Type.INT;
 
-primaryExpr
-	returns[Float result]:
-	Integer_constant { $result=Float.parseFloat($Integer_constant.text); }
-	| Floating_point_constant { $result = Float.parseFloat($Floating_point_constant.text); }
-	| Identifier { $result =  (Float)memory.get($Identifier.text); }
-	| '(' arith_expression ')' {$result=$arith_expression.result;};
+             System.out.println("posneg: "+posneg);
+				
+				// code generation.
+				// push the integer into the operand stack.
 
+            if($posneg>0) TextCode.add("ldc " + $Integer_constant.text);
+            else TextCode.add("ldc -" + $Integer_constant.text);
+			 }
+           | Floating_point_constant
+           {
+              
+			    $attr_type = Type.FLOAT;
+				
+				// code generation.
+				// push the Float into the operand stack.
+
+            if($posneg>0) TextCode.add("ldc " + $Floating_point_constant.text);
+            else TextCode.add("ldc -" + $Floating_point_constant.text);
+           }
+           | Identifier
+		     {
+			    // get type information from symtab.
+			    $attr_type = (Type) symtab.get($Identifier.text).get(0);
+				
+				switch ($attr_type) {
+				case INT: 
+				          // load the variable into the operand stack.
+				          TextCode.add("iload " + symtab.get($Identifier.text).get(1));
+				          break;
+				case FLOAT:
+                     TextCode.add("fload " + symtab.get($Identifier.text).get(1));
+				          break;
+				}
+			 }
+	   | '&' Identifier
+	   | '(' arith_expression ')'
+           ;
+
+		   
 /* description of the tokens */
-FLOAT: 'float';
-INT: 'int';
+FLOAT:'float';
+INT:'int';
 CHAR: 'char';
 
 MAIN: 'main';
@@ -376,22 +318,21 @@ IF: 'if';
 ELSE: 'else';
 FOR: 'for';
 
-RelationOP: '>' | '>=' | '<' | '<=' | '==' | '!=';
+RelationOP: '>' |'>=' | '<' | '<=' | '==' | '!=';
 
-Identifier: ('a' ..'z' | 'A' ..'Z' | '_') (
-		'a' ..'z'
-		| 'A' ..'Z'
-		| '0' ..'9'
-		| '_'
-	)*;
-Integer_constant: '0' ..'9'+;
-Floating_point_constant: '0' ..'9'+ '.' '0' ..'9'+;
+Identifier:('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
+Integer_constant:'0'..'9'+;
+Floating_point_constant:'0'..'9'+ '.' '0'..'9'+;
 
-STRING_LITERAL: '"' ( EscapeSequence | ~('\\' | '"'))* '"';
+STRING_LITERAL
+    :  '"' ( EscapeSequence | ~('\\'|'"') )* '"'
+    ;
 
-WS: ( ' ' | '\t' | '\r' | '\n') {$channel=HIDDEN;};
-COMMENT: '/*' .* '*/' {$channel=HIDDEN;};
+WS:( ' ' | '\t' | '\r' | '\n' ) {$channel=HIDDEN;};
+COMMENT:'/*' .* '*/' {$channel=HIDDEN;};
 
-fragment EscapeSequence:
-	'\\' ('b' | 't' | 'n' | 'f' | 'r' | '\"' | '\'' | '\\');
 
+fragment
+EscapeSequence
+    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
+    ;

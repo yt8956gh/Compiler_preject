@@ -1,8 +1,8 @@
-// $ANTLR 3.5.2 myCompiler.g 2019-06-19 18:24:54
+// $ANTLR 3.5.2 myCompiler.g 2019-06-19 21:28:20
 
+    // import packages here.
     import java.util.HashMap;
-		import java.util.Scanner;
-	  import java.util.ArrayList;
+    import java.util.ArrayList;
 
 
 import org.antlr.runtime.*;
@@ -69,11 +69,20 @@ public class myCompilerParser extends Parser {
 
 
 	    boolean TRACEON = false;
-	    HashMap memory = new HashMap();
-			HashMap dataType = new HashMap();
-			
-			HashMap<String, ArrayList> symtab = new HashMap<String, ArrayList>();
+
+	    // ============================================
+	    // Create a symbol table.
+		// ArrayList is easy to extend to add more info. into symbol table.
+		//
+		// The structure of symbol table:
+		// <variable ID, type, memory location>
+		//    - type: the variable type   (please check "enum Type")
+		//    - memory location: the location (locals in VM) the variable will be stored at.
+	    // ============================================
+	    HashMap<String, ArrayList> symtab = new HashMap<String, ArrayList>();
+
 	    int labelCount = 0;
+		
 		
 		// storageIndex is used to represent/index the location (locals) in VM.
 		// The first index is 0.
@@ -84,8 +93,9 @@ public class myCompilerParser extends Parser {
 
 	    // Type information.
 	    public enum Type{
-	       INT, FLOAT;
+	       INT, FLOAT, CHAR;
 	    }
+
 
 	    /*
 	     * Output prologue.
@@ -101,7 +111,8 @@ public class myCompilerParser extends Parser {
 	       TextCode.add(".limit stack 100");
 	       TextCode.add(".limit locals 100");
 	    }
-	  
+	    
+		
 	    /*
 	     * Output epilogue.
 	     */
@@ -112,6 +123,7 @@ public class myCompilerParser extends Parser {
 	       TextCode.add(".end method");
 	    }
 	    
+	    
 	    /* Generate a new label */
 	    String newLabel()
 	    {
@@ -119,40 +131,45 @@ public class myCompilerParser extends Parser {
 	       return (new String("L")) + Integer.toString(labelCount);
 	    } 
 	    
+	    
 	    public List<String> getTextCode()
 	    {
 	       return TextCode;
-	    }
+	    }			
 
 
 
 	// $ANTLR start "program"
-	// myCompiler.g:71:1: program : VOID MAIN '(' ')' '{' declarations statements[1] '}' ;
+	// myCompiler.g:84:1: program : VOID MAIN '(' ')' '{' declarations statements '}' ;
 	public final void program() throws RecognitionException {
 		try {
-			// myCompiler.g:71:8: ( VOID MAIN '(' ')' '{' declarations statements[1] '}' )
-			// myCompiler.g:72:2: VOID MAIN '(' ')' '{' declarations statements[1] '}'
+			// myCompiler.g:84:8: ( VOID MAIN '(' ')' '{' declarations statements '}' )
+			// myCompiler.g:84:10: VOID MAIN '(' ')' '{' declarations statements '}'
 			{
-			match(input,VOID,FOLLOW_VOID_in_program35); 
-			match(input,MAIN,FOLLOW_MAIN_in_program37); 
-			match(input,21,FOLLOW_21_in_program39); 
-			match(input,22,FOLLOW_22_in_program41); 
+			match(input,VOID,FOLLOW_VOID_in_program36); 
+			match(input,MAIN,FOLLOW_MAIN_in_program38); 
+			match(input,21,FOLLOW_21_in_program40); 
+			match(input,22,FOLLOW_22_in_program42); 
 
+			           /* Output function prologue */
 			           prologue();
 			        
-			match(input,30,FOLLOW_30_in_program45); 
-			pushFollow(FOLLOW_declarations_in_program47);
+			match(input,30,FOLLOW_30_in_program63); 
+			pushFollow(FOLLOW_declarations_in_program77);
 			declarations();
 			state._fsp--;
 
-			pushFollow(FOLLOW_statements_in_program49);
-			statements(1);
+			pushFollow(FOLLOW_statements_in_program90);
+			statements();
 			state._fsp--;
 
-			match(input,31,FOLLOW_31_in_program52); 
-			 if (TRACEON)
+			match(input,31,FOLLOW_31_in_program100); 
+
+					   if (TRACEON)
 					      System.out.println("VOID MAIN () {declarations statements}");
-								 epilogue();
+
+			           /* output function epilogue */	  
+			           epilogue();
 			        
 			}
 
@@ -170,19 +187,19 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "declarations"
-	// myCompiler.g:79:1: declarations : ( type Identifier ';' declarations |);
+	// myCompiler.g:104:1: declarations : ( type Identifier ';' declarations |);
 	public final void declarations() throws RecognitionException {
 		Token Identifier1=null;
-		ParserRuleReturnScope type2 =null;
+		Type type2 =null;
 
 		try {
-			// myCompiler.g:79:13: ( type Identifier ';' declarations |)
+			// myCompiler.g:104:13: ( type Identifier ';' declarations |)
 			int alt1=2;
 			int LA1_0 = input.LA(1);
 			if ( (LA1_0==FLOAT||LA1_0==INT) ) {
 				alt1=1;
 			}
-			else if ( (LA1_0==IF||LA1_0==Identifier||LA1_0==31) ) {
+			else if ( (LA1_0==FOR||LA1_0==IF||LA1_0==Identifier||LA1_0==31) ) {
 				alt1=2;
 			}
 
@@ -194,47 +211,46 @@ public class myCompilerParser extends Parser {
 
 			switch (alt1) {
 				case 1 :
-					// myCompiler.g:80:2: type Identifier ';' declarations
+					// myCompiler.g:104:15: type Identifier ';' declarations
 					{
-					pushFollow(FOLLOW_type_in_declarations62);
+					pushFollow(FOLLOW_type_in_declarations127);
 					type2=type();
 					state._fsp--;
 
-					Identifier1=(Token)match(input,Identifier,FOLLOW_Identifier_in_declarations64); 
-					match(input,28,FOLLOW_28_in_declarations66); 
-					pushFollow(FOLLOW_declarations_in_declarations68);
+					Identifier1=(Token)match(input,Identifier,FOLLOW_Identifier_in_declarations129); 
+					match(input,28,FOLLOW_28_in_declarations131); 
+					pushFollow(FOLLOW_declarations_in_declarations133);
 					declarations();
 					state._fsp--;
 
 
-							 if (TRACEON) 
-							 {System.out.println("declarations: type Identifier : declarations");}
+								     if (TRACEON)
+						                System.out.println("declarations: type Identifier : declarations");
 
-							  //dataType.put((Identifier1!=null?Identifier1.getText():null), new String((type2!=null?input.toString(type2.start,type2.stop):null)));
-
-								 if (symtab.containsKey((Identifier1!=null?Identifier1.getText():null))) 
-								 {
+					                 if (symtab.containsKey((Identifier1!=null?Identifier1.getText():null))) {
 									    // variable re-declared.
-					                    System.out.println("Type Error: " +  Identifier1.getLine() + ": Redeclared identifier.");
+					                    System.out.println("Type Error: " + 
+					                                       Identifier1.getLine() + 
+					                                       ": Redeclared identifier.");
 					                    System.exit(0);
-					        }
+					                 }
 					                 
 									 /* Add ID and its attr_type into the symbol table. */
 									 ArrayList the_list = new ArrayList();
-									 the_list.add((type2!=null?((myCompilerParser.type_return)type2).attr_type:null));
+									 the_list.add(type2);
 									 the_list.add(storageIndex);
 									 storageIndex = storageIndex + 1;
-					         symtab.put((Identifier1!=null?Identifier1.getText():null), the_list);
-
-						
+					             symtab.put((Identifier1!=null?Identifier1.getText():null), the_list);
+					      
 					}
 					break;
 				case 2 :
-					// myCompiler.g:101:4: 
+					// myCompiler.g:125:3: 
 					{
-					 if (TRACEON)
+
+								     if (TRACEON)
 					                    System.out.println("declarations: ");
-					  
+							
 					}
 					break;
 
@@ -251,19 +267,15 @@ public class myCompilerParser extends Parser {
 	// $ANTLR end "declarations"
 
 
-	public static class type_return extends ParserRuleReturnScope {
-		public Type attr_type;
-	};
-
 
 	// $ANTLR start "type"
-	// myCompiler.g:105:1: type returns [Type attr_type] : ( INT | FLOAT );
-	public final myCompilerParser.type_return type() throws RecognitionException {
-		myCompilerParser.type_return retval = new myCompilerParser.type_return();
-		retval.start = input.LT(1);
+	// myCompiler.g:131:1: type returns [Type attr_type] : ( INT | FLOAT );
+	public final Type type() throws RecognitionException {
+		Type attr_type = null;
+
 
 		try {
-			// myCompiler.g:106:25: ( INT | FLOAT )
+			// myCompiler.g:133:5: ( INT | FLOAT )
 			int alt2=2;
 			int LA2_0 = input.LA(1);
 			if ( (LA2_0==INT) ) {
@@ -281,23 +293,21 @@ public class myCompilerParser extends Parser {
 
 			switch (alt2) {
 				case 1 :
-					// myCompiler.g:107:2: INT
+					// myCompiler.g:133:7: INT
 					{
-					match(input,INT,FOLLOW_INT_in_type87); 
-					 if (TRACEON) System.out.println("type: INT"); retval.attr_type =Type.INT; 
+					match(input,INT,FOLLOW_INT_in_type171); 
+					 if (TRACEON) System.out.println("type: INT"); attr_type=Type.INT; 
 					}
 					break;
 				case 2 :
-					// myCompiler.g:108:4: FLOAT
+					// myCompiler.g:134:7: FLOAT
 					{
-					match(input,FLOAT,FOLLOW_FLOAT_in_type94); 
-					if (TRACEON) System.out.println("type: FLOAT"); retval.attr_type =Type.FLOAT; 
+					match(input,FLOAT,FOLLOW_FLOAT_in_type181); 
+					if (TRACEON) System.out.println("type: FLOAT"); attr_type=Type.FLOAT; 
 					}
 					break;
 
 			}
-			retval.stop = input.LT(-1);
-
 		}
 		catch (RecognitionException re) {
 			reportError(re);
@@ -306,20 +316,20 @@ public class myCompilerParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
-		return retval;
+		return attr_type;
 	}
 	// $ANTLR end "type"
 
 
 
 	// $ANTLR start "statements"
-	// myCompiler.g:110:1: statements[int flag] : ( statement[flag] statements[flag] |);
-	public final void statements(int flag) throws RecognitionException {
+	// myCompiler.g:137:1: statements : ( statement statements |);
+	public final void statements() throws RecognitionException {
 		try {
-			// myCompiler.g:110:21: ( statement[flag] statements[flag] |)
+			// myCompiler.g:137:11: ( statement statements |)
 			int alt3=2;
 			int LA3_0 = input.LA(1);
-			if ( (LA3_0==IF||LA3_0==Identifier) ) {
+			if ( (LA3_0==FOR||LA3_0==IF||LA3_0==Identifier) ) {
 				alt3=1;
 			}
 			else if ( (LA3_0==31) ) {
@@ -334,20 +344,20 @@ public class myCompilerParser extends Parser {
 
 			switch (alt3) {
 				case 1 :
-					// myCompiler.g:111:2: statement[flag] statements[flag]
+					// myCompiler.g:137:12: statement statements
 					{
-					pushFollow(FOLLOW_statement_in_statements105);
-					statement(flag);
+					pushFollow(FOLLOW_statement_in_statements191);
+					statement();
 					state._fsp--;
 
-					pushFollow(FOLLOW_statements_in_statements108);
-					statements(flag);
+					pushFollow(FOLLOW_statements_in_statements193);
+					statements();
 					state._fsp--;
 
 					}
 					break;
 				case 2 :
-					// myCompiler.g:112:3: 
+					// myCompiler.g:139:11: 
 					{
 					}
 					break;
@@ -367,13 +377,14 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "statement"
-	// myCompiler.g:114:1: statement[int flag] : ( assign_stmt[flag] ';' | if_stmt[flag] | func_no_return_stmt[flag] ';' );
-	public final void statement(int flag) throws RecognitionException {
+	// myCompiler.g:141:1: statement : ( assign_stmt ';' | if_stmt | func_no_return_stmt ';' | for_stmt );
+	public final void statement() throws RecognitionException {
 		try {
-			// myCompiler.g:114:20: ( assign_stmt[flag] ';' | if_stmt[flag] | func_no_return_stmt[flag] ';' )
-			int alt4=3;
-			int LA4_0 = input.LA(1);
-			if ( (LA4_0==Identifier) ) {
+			// myCompiler.g:141:10: ( assign_stmt ';' | if_stmt | func_no_return_stmt ';' | for_stmt )
+			int alt4=4;
+			switch ( input.LA(1) ) {
+			case Identifier:
+				{
 				int LA4_1 = input.LA(2);
 				if ( (LA4_1==29) ) {
 					alt4=1;
@@ -394,45 +405,60 @@ public class myCompilerParser extends Parser {
 					}
 				}
 
-			}
-			else if ( (LA4_0==IF) ) {
+				}
+				break;
+			case IF:
+				{
 				alt4=2;
-			}
-
-			else {
+				}
+				break;
+			case FOR:
+				{
+				alt4=4;
+				}
+				break;
+			default:
 				NoViableAltException nvae =
 					new NoViableAltException("", 4, 0, input);
 				throw nvae;
 			}
-
 			switch (alt4) {
 				case 1 :
-					// myCompiler.g:115:2: assign_stmt[flag] ';'
+					// myCompiler.g:141:12: assign_stmt ';'
 					{
-					pushFollow(FOLLOW_assign_stmt_in_statement121);
-					assign_stmt(flag);
+					pushFollow(FOLLOW_assign_stmt_in_statement223);
+					assign_stmt();
 					state._fsp--;
 
-					match(input,28,FOLLOW_28_in_statement124); 
+					match(input,28,FOLLOW_28_in_statement225); 
 					}
 					break;
 				case 2 :
-					// myCompiler.g:116:4: if_stmt[flag]
+					// myCompiler.g:142:12: if_stmt
 					{
-					pushFollow(FOLLOW_if_stmt_in_statement129);
-					if_stmt(flag);
+					pushFollow(FOLLOW_if_stmt_in_statement238);
+					if_stmt();
 					state._fsp--;
 
 					}
 					break;
 				case 3 :
-					// myCompiler.g:117:4: func_no_return_stmt[flag] ';'
+					// myCompiler.g:143:12: func_no_return_stmt ';'
 					{
-					pushFollow(FOLLOW_func_no_return_stmt_in_statement135);
-					func_no_return_stmt(flag);
+					pushFollow(FOLLOW_func_no_return_stmt_in_statement251);
+					func_no_return_stmt();
 					state._fsp--;
 
-					match(input,28,FOLLOW_28_in_statement138); 
+					match(input,28,FOLLOW_28_in_statement253); 
+					}
+					break;
+				case 4 :
+					// myCompiler.g:144:12: for_stmt
+					{
+					pushFollow(FOLLOW_for_stmt_in_statement266);
+					for_stmt();
+					state._fsp--;
+
 					}
 					break;
 
@@ -450,23 +476,62 @@ public class myCompilerParser extends Parser {
 
 
 
-	// $ANTLR start "if_stmt"
-	// myCompiler.g:119:1: if_stmt[int flag] : if_then_stmt if_else_stmt[if_else_stmt_flag] ;
-	public final void if_stmt(int flag) throws RecognitionException {
-		int if_then_stmt3 =0;
-
-		int if_else_stmt_flag=0; 
+	// $ANTLR start "for_stmt"
+	// myCompiler.g:147:1: for_stmt : FOR '(' assign_stmt ';' cond_expression ';' assign_stmt ')' block_stmt ;
+	public final void for_stmt() throws RecognitionException {
 		try {
-			// myCompiler.g:120:35: ( if_then_stmt if_else_stmt[if_else_stmt_flag] )
-			// myCompiler.g:121:2: if_then_stmt if_else_stmt[if_else_stmt_flag]
+			// myCompiler.g:147:9: ( FOR '(' assign_stmt ';' cond_expression ';' assign_stmt ')' block_stmt )
+			// myCompiler.g:147:11: FOR '(' assign_stmt ';' cond_expression ';' assign_stmt ')' block_stmt
 			{
-			pushFollow(FOLLOW_if_then_stmt_in_if_stmt153);
-			if_then_stmt3=if_then_stmt();
+			match(input,FOR,FOLLOW_FOR_in_for_stmt283); 
+			match(input,21,FOLLOW_21_in_for_stmt285); 
+			pushFollow(FOLLOW_assign_stmt_in_for_stmt287);
+			assign_stmt();
 			state._fsp--;
 
-			 if(if_then_stmt3==0){if_else_stmt_flag=1; } 
-			pushFollow(FOLLOW_if_else_stmt_in_if_stmt157);
-			if_else_stmt(if_else_stmt_flag);
+			match(input,28,FOLLOW_28_in_for_stmt289); 
+			pushFollow(FOLLOW_cond_expression_in_for_stmt309);
+			cond_expression();
+			state._fsp--;
+
+			match(input,28,FOLLOW_28_in_for_stmt311); 
+			pushFollow(FOLLOW_assign_stmt_in_for_stmt319);
+			assign_stmt();
+			state._fsp--;
+
+			match(input,22,FOLLOW_22_in_for_stmt327); 
+			pushFollow(FOLLOW_block_stmt_in_for_stmt338);
+			block_stmt();
+			state._fsp--;
+
+			}
+
+		}
+		catch (RecognitionException re) {
+			reportError(re);
+			recover(input,re);
+		}
+		finally {
+			// do for sure before leaving
+		}
+	}
+	// $ANTLR end "for_stmt"
+
+
+
+	// $ANTLR start "if_stmt"
+	// myCompiler.g:155:1: if_stmt : if_then_stmt if_else_stmt ;
+	public final void if_stmt() throws RecognitionException {
+		try {
+			// myCompiler.g:156:13: ( if_then_stmt if_else_stmt )
+			// myCompiler.g:156:15: if_then_stmt if_else_stmt
+			{
+			pushFollow(FOLLOW_if_then_stmt_in_if_stmt374);
+			if_then_stmt();
+			state._fsp--;
+
+			pushFollow(FOLLOW_if_else_stmt_in_if_stmt376);
+			if_else_stmt();
 			state._fsp--;
 
 			}
@@ -485,27 +550,21 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "if_then_stmt"
-	// myCompiler.g:124:1: if_then_stmt returns [int exec_flag] : IF '(' cond_expression ')' block_stmt[$exec_flag] ;
-	public final int if_then_stmt() throws RecognitionException {
-		int exec_flag = 0;
-
-
-		float cond_expression4 =0.0f;
-
+	// myCompiler.g:160:1: if_then_stmt : IF '(' cond_expression ')' block_stmt ;
+	public final void if_then_stmt() throws RecognitionException {
 		try {
-			// myCompiler.g:125:24: ( IF '(' cond_expression ')' block_stmt[$exec_flag] )
-			// myCompiler.g:126:2: IF '(' cond_expression ')' block_stmt[$exec_flag]
+			// myCompiler.g:161:13: ( IF '(' cond_expression ')' block_stmt )
+			// myCompiler.g:161:15: IF '(' cond_expression ')' block_stmt
 			{
-			match(input,IF,FOLLOW_IF_in_if_then_stmt173); 
-			match(input,21,FOLLOW_21_in_if_then_stmt175); 
-			pushFollow(FOLLOW_cond_expression_in_if_then_stmt177);
-			cond_expression4=cond_expression();
+			match(input,IF,FOLLOW_IF_in_if_then_stmt414); 
+			match(input,21,FOLLOW_21_in_if_then_stmt416); 
+			pushFollow(FOLLOW_cond_expression_in_if_then_stmt418);
+			cond_expression();
 			state._fsp--;
 
-			match(input,22,FOLLOW_22_in_if_then_stmt179); 
-			 exec_flag = (int)cond_expression4; 
-			pushFollow(FOLLOW_block_stmt_in_if_then_stmt183);
-			block_stmt(exec_flag);
+			match(input,22,FOLLOW_22_in_if_then_stmt420); 
+			pushFollow(FOLLOW_block_stmt_in_if_then_stmt422);
+			block_stmt();
 			state._fsp--;
 
 			}
@@ -518,23 +577,22 @@ public class myCompilerParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
-		return exec_flag;
 	}
 	// $ANTLR end "if_then_stmt"
 
 
 
 	// $ANTLR start "if_else_stmt"
-	// myCompiler.g:129:1: if_else_stmt[int flag] : ( ELSE block_stmt[flag] |);
-	public final void if_else_stmt(int flag) throws RecognitionException {
+	// myCompiler.g:165:1: if_else_stmt : ( ELSE block_stmt |);
+	public final void if_else_stmt() throws RecognitionException {
 		try {
-			// myCompiler.g:129:23: ( ELSE block_stmt[flag] |)
+			// myCompiler.g:166:13: ( ELSE block_stmt |)
 			int alt5=2;
 			int LA5_0 = input.LA(1);
 			if ( (LA5_0==ELSE) ) {
 				alt5=1;
 			}
-			else if ( (LA5_0==IF||LA5_0==Identifier||LA5_0==31) ) {
+			else if ( (LA5_0==FOR||LA5_0==IF||LA5_0==Identifier||LA5_0==31) ) {
 				alt5=2;
 			}
 
@@ -546,25 +604,17 @@ public class myCompilerParser extends Parser {
 
 			switch (alt5) {
 				case 1 :
-					// myCompiler.g:130:2: ELSE block_stmt[flag]
+					// myCompiler.g:166:15: ELSE block_stmt
 					{
-					match(input,ELSE,FOLLOW_ELSE_in_if_else_stmt196); 
-					pushFollow(FOLLOW_block_stmt_in_if_else_stmt198);
-					block_stmt(flag);
+					match(input,ELSE,FOLLOW_ELSE_in_if_else_stmt456); 
+					pushFollow(FOLLOW_block_stmt_in_if_else_stmt458);
+					block_stmt();
 					state._fsp--;
-
-
-
-									if(TRACEON)
-									{
-											 if (flag > 0) { System.out.println("Here\n"); }
-					             System.out.println(flag);
-									}
 
 					}
 					break;
 				case 2 :
-					// myCompiler.g:138:3: 
+					// myCompiler.g:168:13: 
 					{
 					}
 					break;
@@ -584,19 +634,18 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "block_stmt"
-	// myCompiler.g:140:1: block_stmt[int flag] : '{' statements[flag] '}' ;
-	public final void block_stmt(int flag) throws RecognitionException {
+	// myCompiler.g:171:1: block_stmt : '{' statements '}' ;
+	public final void block_stmt() throws RecognitionException {
 		try {
-			// myCompiler.g:140:21: ( '{' statements[flag] '}' )
-			// myCompiler.g:141:2: '{' statements[flag] '}'
+			// myCompiler.g:171:11: ( '{' statements '}' )
+			// myCompiler.g:171:13: '{' statements '}'
 			{
-			match(input,30,FOLLOW_30_in_block_stmt213); 
-			pushFollow(FOLLOW_statements_in_block_stmt215);
-			statements(flag);
+			match(input,30,FOLLOW_30_in_block_stmt499); 
+			pushFollow(FOLLOW_statements_in_block_stmt501);
+			statements();
 			state._fsp--;
 
-			match(input,31,FOLLOW_31_in_block_stmt218); 
-			 if (TRACEON) System.out.println("Flag["+flag+"] block_stmt");
+			match(input,31,FOLLOW_31_in_block_stmt503); 
 			}
 
 		}
@@ -613,25 +662,45 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "assign_stmt"
-	// myCompiler.g:143:1: assign_stmt[int flag] : Identifier '=' arith_expression ;
-	public final void assign_stmt(int flag) throws RecognitionException {
-		Token Identifier5=null;
-		Float arith_expression6 =null;
+	// myCompiler.g:175:1: assign_stmt : Identifier '=' arith_expression ;
+	public final void assign_stmt() throws RecognitionException {
+		Token Identifier3=null;
+		Type arith_expression4 =null;
 
 		try {
-			// myCompiler.g:143:22: ( Identifier '=' arith_expression )
-			// myCompiler.g:144:2: Identifier '=' arith_expression
+			// myCompiler.g:175:12: ( Identifier '=' arith_expression )
+			// myCompiler.g:175:14: Identifier '=' arith_expression
 			{
-			Identifier5=(Token)match(input,Identifier,FOLLOW_Identifier_in_assign_stmt229); 
-			match(input,29,FOLLOW_29_in_assign_stmt231); 
-			pushFollow(FOLLOW_arith_expression_in_assign_stmt233);
-			arith_expression6=arith_expression();
+			Identifier3=(Token)match(input,Identifier,FOLLOW_Identifier_in_assign_stmt515); 
+			match(input,29,FOLLOW_29_in_assign_stmt517); 
+			pushFollow(FOLLOW_arith_expression_in_assign_stmt519);
+			arith_expression4=arith_expression();
 			state._fsp--;
 
 
-							if (flag!=0) {memory.put((Identifier5!=null?Identifier5.getText():null), new Float(arith_expression6));}
-			        if (TRACEON)  {System.out.println("Flag["+flag+"]assign_stmt:" + (Identifier5!=null?Identifier5.getText():null) +" <- " + arith_expression6); }
-					
+						   Type the_type;
+						   int the_mem;
+						   
+						   // get the ID's location and type from symtab.			   
+						   the_type = (Type) symtab.get((Identifier3!=null?Identifier3.getText():null)).get(0);
+						   the_mem = (int) symtab.get((Identifier3!=null?Identifier3.getText():null)).get(1);
+						   
+						   if (the_type != arith_expression4) {
+						      System.out.println("Type error!\n");
+							  System.exit(0);
+						   }
+						   
+						   // issue store insruction:
+			               // => store the top element of the operand stack into the locals.
+						   switch (the_type) {
+						   case INT:
+						              TextCode.add("istore " + the_mem);
+						              break;
+						   case FLOAT:
+						              TextCode.add("fstore " + the_mem);
+						              break;
+						   }
+			             
 			}
 
 		}
@@ -648,193 +717,19 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "func_no_return_stmt"
-	// myCompiler.g:149:1: func_no_return_stmt[int flag] : Identifier '(' STRING_LITERAL ( ',' arg )* ')' ;
-	public final void func_no_return_stmt(int flag) throws RecognitionException {
-		Token Identifier8=null;
-		Token STRING_LITERAL9=null;
-		ParserRuleReturnScope arg7 =null;
-
-
-			
-			List<Float> args=new ArrayList<Float>(); 
-			List<String> refs=new ArrayList<String>(); 
-
+	// myCompiler.g:203:1: func_no_return_stmt : Identifier '(' argument ')' ;
+	public final void func_no_return_stmt() throws RecognitionException {
 		try {
-			// myCompiler.g:154:2: ( Identifier '(' STRING_LITERAL ( ',' arg )* ')' )
-			// myCompiler.g:155:2: Identifier '(' STRING_LITERAL ( ',' arg )* ')'
+			// myCompiler.g:203:20: ( Identifier '(' argument ')' )
+			// myCompiler.g:203:22: Identifier '(' argument ')'
 			{
-			Identifier8=(Token)match(input,Identifier,FOLLOW_Identifier_in_func_no_return_stmt250); 
-			match(input,21,FOLLOW_21_in_func_no_return_stmt252); 
-			STRING_LITERAL9=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_func_no_return_stmt254); 
-			// myCompiler.g:155:32: ( ',' arg )*
-			loop6:
-			while (true) {
-				int alt6=2;
-				int LA6_0 = input.LA(1);
-				if ( (LA6_0==25) ) {
-					alt6=1;
-				}
+			match(input,Identifier,FOLLOW_Identifier_in_func_no_return_stmt559); 
+			match(input,21,FOLLOW_21_in_func_no_return_stmt561); 
+			pushFollow(FOLLOW_argument_in_func_no_return_stmt563);
+			argument();
+			state._fsp--;
 
-				switch (alt6) {
-				case 1 :
-					// myCompiler.g:156:3: ',' arg
-					{
-					match(input,25,FOLLOW_25_in_func_no_return_stmt260); 
-					pushFollow(FOLLOW_arg_in_func_no_return_stmt262);
-					arg7=arg();
-					state._fsp--;
-
-
-								if((arg7!=null?((myCompilerParser.arg_return)arg7).mode:0)==1){
-								 	if(TRACEON)	{System.out.println((arg7!=null?((myCompilerParser.arg_return)arg7).argName:null));}  
-									refs.add((arg7!=null?((myCompilerParser.arg_return)arg7).argName:null));
-								}
-								else{
-									if(TRACEON)	{System.out.println((arg7!=null?((myCompilerParser.arg_return)arg7).value:0.0f));}  
-									args.add((arg7!=null?((myCompilerParser.arg_return)arg7).value:0.0f)); 
-								}
-					 
-					}
-					break;
-
-				default :
-					break loop6;
-				}
-			}
-
-			match(input,22,FOLLOW_22_in_func_no_return_stmt270); 
-
-					if(TRACEON){
-								System.out.println("Flag["+flag+"]Function NAME:" +(Identifier8!=null?Identifier8.getText():null));
-					}
-
-					if(flag==0)
-					{
-						System.out.println((Identifier8!=null?Identifier8.getText():null)+": not work.");
-					}
-					else if((Identifier8!=null?Identifier8.getText():null).equals("printf"))
-					{
-							String tmp = new String((STRING_LITERAL9!=null?STRING_LITERAL9.getText():null));
-							tmp = tmp.substring(1,tmp.length()-1 ); //remove quotation mark
-							int retD=1,retF=1;
-							int index=0;
-
-							while(retD!=-1 || retF!=-1)
-							{
-									retD = tmp.indexOf("%d");
-									retF = tmp.indexOf("%f");
-
-									if(TRACEON)
-									{
-											System.out.println("retD: "+retD);
-											System.out.println("retF: "+retF);
-									}
-									
-									if(index>=args.size()) 
-									{
-											if(retD!=-1 || retF!=-1)System.out.println("ERROR:  Number of argument  in printf is too less .");
-											break;
-									}
-
-
-									if(retD!=-1 && (retF==-1 || retD<retF))
-									{
-												tmp = tmp.replaceFirst("%d",String.valueOf((int)Math.floor(args.get(index++))));
-									}
-									else	if(retF!=-1 && (retD==-1 || retF<retD))
-									{
-												tmp = tmp.replaceFirst("%f", String.valueOf(args.get(index++) ) );
-									}
-									else{
-										    System.out.println("ERROR: Number of argument in printf is too more.");
-									}
-							}
-
-							int newLineIndex=0;
-							String fragment=null;
-
-							while(newLineIndex!=-1){
-
-									newLineIndex = tmp.indexOf("\\n");
-
-									if(newLineIndex==-1) {fragment = tmp;}
-									else{
-										fragment = tmp.substring(0,newLineIndex);
-										tmp = tmp.substring(newLineIndex+2, tmp.length());
-									}
-									
-									System.out.println(fragment);
-							}
-							
-					}
-					else if ((Identifier8!=null?Identifier8.getText():null).equals("scanf"))
-					{
-					   	if(TRACEON)	System.out.println("SCANF: ");
-							String str = new String((STRING_LITERAL9!=null?STRING_LITERAL9.getText():null)), argType=null;				
-							str = str.substring(1,str.length()-1 ); //remove quotation mark
-							int retD=1,retF=1,index=0,tmpInt=0;
-							float tmpFloat=0.0f;
-							Scanner scanner = new Scanner(System.in);
-
-							while(retD!=-1 || retF!=-1)
-							{
-									retD = str.indexOf("%d");
-									retF = str.indexOf("%f");
-
-
-									if(TRACEON)
-									{
-											System.out.println("retD: "+retD);
-											System.out.println("retF: "+retF);
-											System.out.println("INDEX: "+index);
-									}
-									
-									if(index>=refs.size()) 
-									{
-											if(retD!=-1 || retF!=-1)System.out.println("ERROR:  Number of argument  in scanf is too less .");
-											break;
-									}
-
-									if(retD!=-1 && (retF==-1 || retD<retF)) // for int 
-									{
-												tmpInt=scanner.nextInt();
-												argType = (String)dataType.get(refs.get(index));
-
-												tmpFloat = (float) tmpInt;
-
-												if(argType.equals("int")){
-														memory.put(refs.get(index), tmpFloat);
-												}
-												else{
-														memory.put(refs.get(index), tmpFloat);
-												}
-
-												str = str.substring(retD+2,str.length());
-
-												index++;
-									}
-									else	if(retF!=-1 && (retD==-1 || retF<retD)) // for float
-									{
-												tmpFloat=scanner.nextFloat();
-
-												argType = (String)dataType.get(refs.get(index));
-
-												if(argType.equals("int")){
-															memory.put(refs.get(index), new Float(Math.floor(tmpFloat)));
-												}
-												else{
-															memory.put(refs.get(index), new Float(tmpFloat));
-												}
-
-											 str = str.substring(retF+2,str.length());
-											index++;
-									}
-									else{
-										    System.out.println("ERROR: Number of argument in scanf is too more.");
-									}
-							}
-				 	} //else-if 
-
+			match(input,22,FOLLOW_22_in_func_no_return_stmt565); 
 			}
 
 		}
@@ -849,30 +744,70 @@ public class myCompilerParser extends Parser {
 	// $ANTLR end "func_no_return_stmt"
 
 
-	public static class arg_return extends ParserRuleReturnScope {
-		public float value;
-		public String argName;
-		public int mode;
-	};
+
+	// $ANTLR start "argument"
+	// myCompiler.g:207:1: argument : arg ( ',' arg )* ;
+	public final void argument() throws RecognitionException {
+		try {
+			// myCompiler.g:207:9: ( arg ( ',' arg )* )
+			// myCompiler.g:207:11: arg ( ',' arg )*
+			{
+			pushFollow(FOLLOW_arg_in_argument593);
+			arg();
+			state._fsp--;
+
+			// myCompiler.g:207:15: ( ',' arg )*
+			loop6:
+			while (true) {
+				int alt6=2;
+				int LA6_0 = input.LA(1);
+				if ( (LA6_0==25) ) {
+					alt6=1;
+				}
+
+				switch (alt6) {
+				case 1 :
+					// myCompiler.g:207:16: ',' arg
+					{
+					match(input,25,FOLLOW_25_in_argument596); 
+					pushFollow(FOLLOW_arg_in_argument598);
+					arg();
+					state._fsp--;
+
+					}
+					break;
+
+				default :
+					break loop6;
+				}
+			}
+
+			}
+
+		}
+		catch (RecognitionException re) {
+			reportError(re);
+			recover(input,re);
+		}
+		finally {
+			// do for sure before leaving
+		}
+	}
+	// $ANTLR end "argument"
+
 
 
 	// $ANTLR start "arg"
-	// myCompiler.g:299:1: arg returns [float value, String argName, int mode] : ( arith_expression | '&' Identifier );
-	public final myCompilerParser.arg_return arg() throws RecognitionException {
-		myCompilerParser.arg_return retval = new myCompilerParser.arg_return();
-		retval.start = input.LT(1);
-
-		Token Identifier11=null;
-		Float arith_expression10 =null;
-
+	// myCompiler.g:210:1: arg : ( arith_expression | STRING_LITERAL );
+	public final void arg() throws RecognitionException {
 		try {
-			// myCompiler.g:300:48: ( arith_expression | '&' Identifier )
+			// myCompiler.g:210:4: ( arith_expression | STRING_LITERAL )
 			int alt7=2;
 			int LA7_0 = input.LA(1);
-			if ( (LA7_0==Floating_point_constant||(LA7_0 >= Identifier && LA7_0 <= Integer_constant)||LA7_0==21||LA7_0==26) ) {
+			if ( (LA7_0==Floating_point_constant||(LA7_0 >= Identifier && LA7_0 <= Integer_constant)||(LA7_0 >= 20 && LA7_0 <= 21)||LA7_0==26) ) {
 				alt7=1;
 			}
-			else if ( (LA7_0==20) ) {
+			else if ( (LA7_0==STRING_LITERAL) ) {
 				alt7=2;
 			}
 
@@ -884,27 +819,22 @@ public class myCompilerParser extends Parser {
 
 			switch (alt7) {
 				case 1 :
-					// myCompiler.g:301:2: arith_expression
+					// myCompiler.g:210:6: arith_expression
 					{
-					pushFollow(FOLLOW_arith_expression_in_arg284);
-					arith_expression10=arith_expression();
+					pushFollow(FOLLOW_arith_expression_in_arg616);
+					arith_expression();
 					state._fsp--;
 
-					retval.value =arith_expression10; retval.mode =0;
 					}
 					break;
 				case 2 :
-					// myCompiler.g:302:4: '&' Identifier
+					// myCompiler.g:211:6: STRING_LITERAL
 					{
-					match(input,20,FOLLOW_20_in_arg291); 
-					Identifier11=(Token)match(input,Identifier,FOLLOW_Identifier_in_arg293); 
-					retval.argName =(Identifier11!=null?Identifier11.getText():null); retval.mode =1;
+					match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_arg623); 
 					}
 					break;
 
 			}
-			retval.stop = input.LT(-1);
-
 		}
 		catch (RecognitionException re) {
 			reportError(re);
@@ -913,32 +843,34 @@ public class myCompilerParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
-		return retval;
 	}
 	// $ANTLR end "arg"
 
 
 
 	// $ANTLR start "cond_expression"
-	// myCompiler.g:304:1: cond_expression returns [float result] : a= arith_expression ( RelationOP b= arith_expression )* ;
-	public final float cond_expression() throws RecognitionException {
-		float result = 0.0f;
+	// myCompiler.g:214:1: cond_expression returns [boolean truth] : a= arith_expression ( RelationOP arith_expression )* ;
+	public final boolean cond_expression() throws RecognitionException {
+		boolean truth = false;
 
 
-		Token RelationOP12=null;
-		Float a =null;
-		Float b =null;
+		Type a =null;
 
 		try {
-			// myCompiler.g:305:23: (a= arith_expression ( RelationOP b= arith_expression )* )
-			// myCompiler.g:306:2: a= arith_expression ( RelationOP b= arith_expression )*
+			// myCompiler.g:216:16: (a= arith_expression ( RelationOP arith_expression )* )
+			// myCompiler.g:216:18: a= arith_expression ( RelationOP arith_expression )*
 			{
-			pushFollow(FOLLOW_arith_expression_in_cond_expression311);
+			pushFollow(FOLLOW_arith_expression_in_cond_expression661);
 			a=arith_expression();
 			state._fsp--;
 
-			 result = a;
-			// myCompiler.g:306:47: ( RelationOP b= arith_expression )*
+
+							    if (a.ordinal() != 0)
+								   truth = true;
+								else
+								   truth = false;
+							 
+			// myCompiler.g:223:18: ( RelationOP arith_expression )*
 			loop8:
 			while (true) {
 				int alt8=2;
@@ -949,46 +881,13 @@ public class myCompilerParser extends Parser {
 
 				switch (alt8) {
 				case 1 :
-					// myCompiler.g:307:3: RelationOP b= arith_expression
+					// myCompiler.g:223:19: RelationOP arith_expression
 					{
-					RelationOP12=(Token)match(input,RelationOP,FOLLOW_RelationOP_in_cond_expression319); 
-					pushFollow(FOLLOW_arith_expression_in_cond_expression325);
-					b=arith_expression();
+					match(input,RelationOP,FOLLOW_RelationOP_in_cond_expression691); 
+					pushFollow(FOLLOW_arith_expression_in_cond_expression693);
+					arith_expression();
 					state._fsp--;
 
-					 
-						
-															if((RelationOP12!=null?RelationOP12.getText():null).equals(">"))
-															{
-																	if(result > b) result = 1;
-					                        else result = 0;
-															}
-															else	if((RelationOP12!=null?RelationOP12.getText():null).equals(">="))
-															{
-																	if(result >= b) result = 1;
-					                        else result = 0;
-															}
-															else	if((RelationOP12!=null?RelationOP12.getText():null).equals("<"))
-															{
-																	if(result < b) result = 1;
-					                        else result = 0;
-															}
-																else	if((RelationOP12!=null?RelationOP12.getText():null).equals("<="))
-															{
-																	if(result <= b) result = 1;
-					                        else result = 0;
-															}
-															else	if((RelationOP12!=null?RelationOP12.getText():null).equals("=="))
-															{
-																	if(result == b) result = 1;
-					                        else result = 0;
-															}
-															else	if((RelationOP12!=null?RelationOP12.getText():null).equals("!="))
-															{
-																	if(result != b) result = 1;
-					                        else result = 0;
-															}
-					                 
 					}
 					break;
 
@@ -997,7 +896,6 @@ public class myCompilerParser extends Parser {
 				}
 			}
 
-			if(TRACEON){System.out.println("result:"+result);} 
 			}
 
 		}
@@ -1008,32 +906,32 @@ public class myCompilerParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
-		return result;
+		return truth;
 	}
 	// $ANTLR end "cond_expression"
 
 
 
 	// $ANTLR start "arith_expression"
-	// myCompiler.g:342:1: arith_expression returns [Float result] : a= multExpr ( '+' b= multExpr | '-' c= multExpr )* ;
-	public final Float arith_expression() throws RecognitionException {
-		Float result = null;
+	// myCompiler.g:227:1: arith_expression returns [Type attr_type] : a= multExpr ( '+' b= multExpr | '-' c= multExpr )* ;
+	public final Type arith_expression() throws RecognitionException {
+		Type attr_type = null;
 
 
-		Float a =null;
-		Float b =null;
-		Float c =null;
+		Type a =null;
+		Type b =null;
+		Type c =null;
 
 		try {
-			// myCompiler.g:343:23: (a= multExpr ( '+' b= multExpr | '-' c= multExpr )* )
-			// myCompiler.g:344:2: a= multExpr ( '+' b= multExpr | '-' c= multExpr )*
+			// myCompiler.g:229:17: (a= multExpr ( '+' b= multExpr | '-' c= multExpr )* )
+			// myCompiler.g:229:19: a= multExpr ( '+' b= multExpr | '-' c= multExpr )*
 			{
-			pushFollow(FOLLOW_multExpr_in_arith_expression349);
+			pushFollow(FOLLOW_multExpr_in_arith_expression748);
 			a=multExpr();
 			state._fsp--;
 
-			 result =a; 
-			// myCompiler.g:344:38: ( '+' b= multExpr | '-' c= multExpr )*
+			 attr_type = a; 
+			// myCompiler.g:230:18: ( '+' b= multExpr | '-' c= multExpr )*
 			loop9:
 			while (true) {
 				int alt9=3;
@@ -1047,25 +945,31 @@ public class myCompilerParser extends Parser {
 
 				switch (alt9) {
 				case 1 :
-					// myCompiler.g:345:3: '+' b= multExpr
+					// myCompiler.g:230:20: '+' b= multExpr
 					{
-					match(input,24,FOLLOW_24_in_arith_expression357); 
-					pushFollow(FOLLOW_multExpr_in_arith_expression363);
+					match(input,24,FOLLOW_24_in_arith_expression771); 
+					pushFollow(FOLLOW_multExpr_in_arith_expression775);
 					b=multExpr();
 					state._fsp--;
 
-					result = result+b;
+
+					                              if ((attr_type == Type.INT) &&(b == Type.INT))  TextCode.add("iadd");
+					                              else TextCode.add("fadd");
+					                       
 					}
 					break;
 				case 2 :
-					// myCompiler.g:346:5: '-' c= multExpr
+					// myCompiler.g:235:20: '-' c= multExpr
 					{
-					match(input,26,FOLLOW_26_in_arith_expression371); 
-					pushFollow(FOLLOW_multExpr_in_arith_expression377);
+					match(input,26,FOLLOW_26_in_arith_expression821); 
+					pushFollow(FOLLOW_multExpr_in_arith_expression825);
 					c=multExpr();
 					state._fsp--;
 
-					result = result-c;
+
+					                              if ((attr_type == Type.INT) &&(c == Type.INT))  TextCode.add("isub");
+					                              else TextCode.add("fsub");
+					                      
 					}
 					break;
 
@@ -1084,32 +988,32 @@ public class myCompilerParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
-		return result;
+		return attr_type;
 	}
 	// $ANTLR end "arith_expression"
 
 
 
 	// $ANTLR start "multExpr"
-	// myCompiler.g:349:1: multExpr returns [Float result] : a= signExpr ( '*' b= signExpr | '/' c= signExpr )* ;
-	public final Float multExpr() throws RecognitionException {
-		Float result = null;
+	// myCompiler.g:243:1: multExpr returns [Type attr_type] : a= signExpr ( '*' b= signExpr | '/' c= signExpr )* ;
+	public final Type multExpr() throws RecognitionException {
+		Type attr_type = null;
 
 
-		Float a =null;
-		Float b =null;
-		Float c =null;
+		Type a =null;
+		Type b =null;
+		Type c =null;
 
 		try {
-			// myCompiler.g:350:23: (a= signExpr ( '*' b= signExpr | '/' c= signExpr )* )
-			// myCompiler.g:351:2: a= signExpr ( '*' b= signExpr | '/' c= signExpr )*
+			// myCompiler.g:245:11: (a= signExpr ( '*' b= signExpr | '/' c= signExpr )* )
+			// myCompiler.g:245:13: a= signExpr ( '*' b= signExpr | '/' c= signExpr )*
 			{
-			pushFollow(FOLLOW_signExpr_in_multExpr399);
+			pushFollow(FOLLOW_signExpr_in_multExpr911);
 			a=signExpr();
 			state._fsp--;
 
-			 result =a; 
-			// myCompiler.g:351:38: ( '*' b= signExpr | '/' c= signExpr )*
+			 attr_type =a; 
+			// myCompiler.g:246:11: ( '*' b= signExpr | '/' c= signExpr )*
 			loop10:
 			while (true) {
 				int alt10=3;
@@ -1123,25 +1027,31 @@ public class myCompilerParser extends Parser {
 
 				switch (alt10) {
 				case 1 :
-					// myCompiler.g:352:3: '*' b= signExpr
+					// myCompiler.g:246:13: '*' b= signExpr
 					{
-					match(input,23,FOLLOW_23_in_multExpr407); 
-					pushFollow(FOLLOW_signExpr_in_multExpr413);
+					match(input,23,FOLLOW_23_in_multExpr927); 
+					pushFollow(FOLLOW_signExpr_in_multExpr931);
 					b=signExpr();
 					state._fsp--;
 
-					result = result*b;
+
+					                              if ((attr_type == Type.INT) &&(b == Type.INT))  TextCode.add("imul");
+					                              else TextCode.add("fmul");
+					                       
 					}
 					break;
 				case 2 :
-					// myCompiler.g:353:5: '/' c= signExpr
+					// myCompiler.g:251:13: '/' c= signExpr
 					{
-					match(input,27,FOLLOW_27_in_multExpr421); 
-					pushFollow(FOLLOW_signExpr_in_multExpr427);
+					match(input,27,FOLLOW_27_in_multExpr970); 
+					pushFollow(FOLLOW_signExpr_in_multExpr974);
 					c=signExpr();
 					state._fsp--;
 
-					result = result/c;
+
+					                              if ((attr_type == Type.INT) &&(c == Type.INT))  TextCode.add("idiv");
+					                              else TextCode.add("fdiv");
+					                      
 					}
 					break;
 
@@ -1160,25 +1070,26 @@ public class myCompilerParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
-		return result;
+		return attr_type;
 	}
 	// $ANTLR end "multExpr"
 
 
 
 	// $ANTLR start "signExpr"
-	// myCompiler.g:356:1: signExpr returns [Float result] : (a= primaryExpr | '-' primaryExpr );
-	public final Float signExpr() throws RecognitionException {
-		Float result = null;
+	// myCompiler.g:259:1: signExpr returns [Type attr_type] : (a= primaryExpr[1] | '-' b= primaryExpr[-1] );
+	public final Type signExpr() throws RecognitionException {
+		Type attr_type = null;
 
 
-		Float a =null;
+		Type a =null;
+		Type b =null;
 
 		try {
-			// myCompiler.g:357:23: (a= primaryExpr | '-' primaryExpr )
+			// myCompiler.g:261:9: (a= primaryExpr[1] | '-' b= primaryExpr[-1] )
 			int alt11=2;
 			int LA11_0 = input.LA(1);
-			if ( (LA11_0==Floating_point_constant||(LA11_0 >= Identifier && LA11_0 <= Integer_constant)||LA11_0==21) ) {
+			if ( (LA11_0==Floating_point_constant||(LA11_0 >= Identifier && LA11_0 <= Integer_constant)||(LA11_0 >= 20 && LA11_0 <= 21)) ) {
 				alt11=1;
 			}
 			else if ( (LA11_0==26) ) {
@@ -1193,23 +1104,24 @@ public class myCompilerParser extends Parser {
 
 			switch (alt11) {
 				case 1 :
-					// myCompiler.g:358:2: a= primaryExpr
+					// myCompiler.g:261:11: a= primaryExpr[1]
 					{
-					pushFollow(FOLLOW_primaryExpr_in_signExpr449);
-					a=primaryExpr();
+					pushFollow(FOLLOW_primaryExpr_in_signExpr1030);
+					a=primaryExpr(1);
 					state._fsp--;
 
-					 result =a; 
+					 attr_type =a;
 					}
 					break;
 				case 2 :
-					// myCompiler.g:359:4: '-' primaryExpr
+					// myCompiler.g:262:11: '-' b= primaryExpr[-1]
 					{
-					match(input,26,FOLLOW_26_in_signExpr456); 
-					pushFollow(FOLLOW_primaryExpr_in_signExpr458);
-					primaryExpr();
+					match(input,26,FOLLOW_26_in_signExpr1046); 
+					pushFollow(FOLLOW_primaryExpr_in_signExpr1050);
+					b=primaryExpr(-1);
 					state._fsp--;
 
+					 attr_type =b;
 					}
 					break;
 
@@ -1222,26 +1134,25 @@ public class myCompilerParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
-		return result;
+		return attr_type;
 	}
 	// $ANTLR end "signExpr"
 
 
 
 	// $ANTLR start "primaryExpr"
-	// myCompiler.g:361:1: primaryExpr returns [Float result] : ( Integer_constant | Floating_point_constant | Identifier | '(' arith_expression ')' );
-	public final Float primaryExpr() throws RecognitionException {
-		Float result = null;
+	// myCompiler.g:265:1: primaryExpr[int posneg] returns [Type attr_type] : ( Integer_constant | Floating_point_constant | Identifier | '&' Identifier | '(' arith_expression ')' );
+	public final Type primaryExpr(int posneg) throws RecognitionException {
+		Type attr_type = null;
 
 
-		Token Integer_constant13=null;
-		Token Floating_point_constant14=null;
-		Token Identifier15=null;
-		Float arith_expression16 =null;
+		Token Integer_constant5=null;
+		Token Floating_point_constant6=null;
+		Token Identifier7=null;
 
 		try {
-			// myCompiler.g:362:23: ( Integer_constant | Floating_point_constant | Identifier | '(' arith_expression ')' )
-			int alt12=4;
+			// myCompiler.g:267:12: ( Integer_constant | Floating_point_constant | Identifier | '&' Identifier | '(' arith_expression ')' )
+			int alt12=5;
 			switch ( input.LA(1) ) {
 			case Integer_constant:
 				{
@@ -1258,9 +1169,14 @@ public class myCompilerParser extends Parser {
 				alt12=3;
 				}
 				break;
-			case 21:
+			case 20:
 				{
 				alt12=4;
+				}
+				break;
+			case 21:
+				{
+				alt12=5;
 				}
 				break;
 			default:
@@ -1270,36 +1186,74 @@ public class myCompilerParser extends Parser {
 			}
 			switch (alt12) {
 				case 1 :
-					// myCompiler.g:363:2: Integer_constant
+					// myCompiler.g:267:14: Integer_constant
 					{
-					Integer_constant13=(Token)match(input,Integer_constant,FOLLOW_Integer_constant_in_primaryExpr470); 
-					 result =Float.parseFloat((Integer_constant13!=null?Integer_constant13.getText():null)); 
+					Integer_constant5=(Token)match(input,Integer_constant,FOLLOW_Integer_constant_in_primaryExpr1084); 
+
+								    attr_type = Type.INT;
+
+					             System.out.println("posneg: "+posneg);
+									
+									// code generation.
+									// push the integer into the operand stack.
+
+					            if(posneg>0) TextCode.add("ldc " + (Integer_constant5!=null?Integer_constant5.getText():null));
+					            else TextCode.add("ldc -" + (Integer_constant5!=null?Integer_constant5.getText():null));
+								 
 					}
 					break;
 				case 2 :
-					// myCompiler.g:364:4: Floating_point_constant
+					// myCompiler.g:279:14: Floating_point_constant
 					{
-					Floating_point_constant14=(Token)match(input,Floating_point_constant,FOLLOW_Floating_point_constant_in_primaryExpr477); 
-					 result = Float.parseFloat((Floating_point_constant14!=null?Floating_point_constant14.getText():null)); 
+					Floating_point_constant6=(Token)match(input,Floating_point_constant,FOLLOW_Floating_point_constant_in_primaryExpr1108); 
+
+					              
+								    attr_type = Type.FLOAT;
+									
+									// code generation.
+									// push the Float into the operand stack.
+
+					            if(posneg>0) TextCode.add("ldc " + (Floating_point_constant6!=null?Floating_point_constant6.getText():null));
+					            else TextCode.add("ldc -" + (Floating_point_constant6!=null?Floating_point_constant6.getText():null));
+					           
 					}
 					break;
 				case 3 :
-					// myCompiler.g:365:4: Identifier
+					// myCompiler.g:290:14: Identifier
 					{
-					Identifier15=(Token)match(input,Identifier,FOLLOW_Identifier_in_primaryExpr484); 
-					 result =  (Float)memory.get((Identifier15!=null?Identifier15.getText():null)); 
+					Identifier7=(Token)match(input,Identifier,FOLLOW_Identifier_in_primaryExpr1136); 
+
+								    // get type information from symtab.
+								    attr_type = (Type) symtab.get((Identifier7!=null?Identifier7.getText():null)).get(0);
+									
+									switch (attr_type) {
+									case INT: 
+									          // load the variable into the operand stack.
+									          TextCode.add("iload " + symtab.get((Identifier7!=null?Identifier7.getText():null)).get(1));
+									          break;
+									case FLOAT:
+					                     TextCode.add("fload " + symtab.get((Identifier7!=null?Identifier7.getText():null)).get(1));
+									          break;
+									}
+								 
 					}
 					break;
 				case 4 :
-					// myCompiler.g:366:4: '(' arith_expression ')'
+					// myCompiler.g:305:7: '&' Identifier
 					{
-					match(input,21,FOLLOW_21_in_primaryExpr491); 
-					pushFollow(FOLLOW_arith_expression_in_primaryExpr493);
-					arith_expression16=arith_expression();
+					match(input,20,FOLLOW_20_in_primaryExpr1153); 
+					match(input,Identifier,FOLLOW_Identifier_in_primaryExpr1155); 
+					}
+					break;
+				case 5 :
+					// myCompiler.g:306:7: '(' arith_expression ')'
+					{
+					match(input,21,FOLLOW_21_in_primaryExpr1163); 
+					pushFollow(FOLLOW_arith_expression_in_primaryExpr1165);
+					arith_expression();
 					state._fsp--;
 
-					match(input,22,FOLLOW_22_in_primaryExpr495); 
-					result =arith_expression16;
+					match(input,22,FOLLOW_22_in_primaryExpr1167); 
 					}
 					break;
 
@@ -1312,7 +1266,7 @@ public class myCompilerParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
-		return result;
+		return attr_type;
 	}
 	// $ANTLR end "primaryExpr"
 
@@ -1320,71 +1274,83 @@ public class myCompilerParser extends Parser {
 
 
 
-	public static final BitSet FOLLOW_VOID_in_program35 = new BitSet(new long[]{0x0000000000008000L});
-	public static final BitSet FOLLOW_MAIN_in_program37 = new BitSet(new long[]{0x0000000000200000L});
-	public static final BitSet FOLLOW_21_in_program39 = new BitSet(new long[]{0x0000000000400000L});
-	public static final BitSet FOLLOW_22_in_program41 = new BitSet(new long[]{0x0000000040000000L});
-	public static final BitSet FOLLOW_30_in_program45 = new BitSet(new long[]{0x0000000080003900L});
-	public static final BitSet FOLLOW_declarations_in_program47 = new BitSet(new long[]{0x0000000080002800L});
-	public static final BitSet FOLLOW_statements_in_program49 = new BitSet(new long[]{0x0000000080000000L});
-	public static final BitSet FOLLOW_31_in_program52 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_type_in_declarations62 = new BitSet(new long[]{0x0000000000002000L});
-	public static final BitSet FOLLOW_Identifier_in_declarations64 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_28_in_declarations66 = new BitSet(new long[]{0x0000000000001100L});
-	public static final BitSet FOLLOW_declarations_in_declarations68 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_INT_in_type87 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_FLOAT_in_type94 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_statement_in_statements105 = new BitSet(new long[]{0x0000000000002800L});
-	public static final BitSet FOLLOW_statements_in_statements108 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_assign_stmt_in_statement121 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_28_in_statement124 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_if_stmt_in_statement129 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_func_no_return_stmt_in_statement135 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_28_in_statement138 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_if_then_stmt_in_if_stmt153 = new BitSet(new long[]{0x0000000000000040L});
-	public static final BitSet FOLLOW_if_else_stmt_in_if_stmt157 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_IF_in_if_then_stmt173 = new BitSet(new long[]{0x0000000000200000L});
-	public static final BitSet FOLLOW_21_in_if_then_stmt175 = new BitSet(new long[]{0x0000000004206400L});
-	public static final BitSet FOLLOW_cond_expression_in_if_then_stmt177 = new BitSet(new long[]{0x0000000000400000L});
-	public static final BitSet FOLLOW_22_in_if_then_stmt179 = new BitSet(new long[]{0x0000000040000000L});
-	public static final BitSet FOLLOW_block_stmt_in_if_then_stmt183 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_ELSE_in_if_else_stmt196 = new BitSet(new long[]{0x0000000040000000L});
-	public static final BitSet FOLLOW_block_stmt_in_if_else_stmt198 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_30_in_block_stmt213 = new BitSet(new long[]{0x0000000080002800L});
-	public static final BitSet FOLLOW_statements_in_block_stmt215 = new BitSet(new long[]{0x0000000080000000L});
-	public static final BitSet FOLLOW_31_in_block_stmt218 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_Identifier_in_assign_stmt229 = new BitSet(new long[]{0x0000000020000000L});
-	public static final BitSet FOLLOW_29_in_assign_stmt231 = new BitSet(new long[]{0x0000000004206400L});
-	public static final BitSet FOLLOW_arith_expression_in_assign_stmt233 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_Identifier_in_func_no_return_stmt250 = new BitSet(new long[]{0x0000000000200000L});
-	public static final BitSet FOLLOW_21_in_func_no_return_stmt252 = new BitSet(new long[]{0x0000000000020000L});
-	public static final BitSet FOLLOW_STRING_LITERAL_in_func_no_return_stmt254 = new BitSet(new long[]{0x0000000002400000L});
-	public static final BitSet FOLLOW_25_in_func_no_return_stmt260 = new BitSet(new long[]{0x0000000004306400L});
-	public static final BitSet FOLLOW_arg_in_func_no_return_stmt262 = new BitSet(new long[]{0x0000000002400000L});
-	public static final BitSet FOLLOW_22_in_func_no_return_stmt270 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_arith_expression_in_arg284 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_20_in_arg291 = new BitSet(new long[]{0x0000000000002000L});
-	public static final BitSet FOLLOW_Identifier_in_arg293 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_arith_expression_in_cond_expression311 = new BitSet(new long[]{0x0000000000010002L});
-	public static final BitSet FOLLOW_RelationOP_in_cond_expression319 = new BitSet(new long[]{0x0000000004206400L});
-	public static final BitSet FOLLOW_arith_expression_in_cond_expression325 = new BitSet(new long[]{0x0000000000010002L});
-	public static final BitSet FOLLOW_multExpr_in_arith_expression349 = new BitSet(new long[]{0x0000000005000002L});
-	public static final BitSet FOLLOW_24_in_arith_expression357 = new BitSet(new long[]{0x0000000004206400L});
-	public static final BitSet FOLLOW_multExpr_in_arith_expression363 = new BitSet(new long[]{0x0000000005000002L});
-	public static final BitSet FOLLOW_26_in_arith_expression371 = new BitSet(new long[]{0x0000000004206400L});
-	public static final BitSet FOLLOW_multExpr_in_arith_expression377 = new BitSet(new long[]{0x0000000005000002L});
-	public static final BitSet FOLLOW_signExpr_in_multExpr399 = new BitSet(new long[]{0x0000000008800002L});
-	public static final BitSet FOLLOW_23_in_multExpr407 = new BitSet(new long[]{0x0000000004206400L});
-	public static final BitSet FOLLOW_signExpr_in_multExpr413 = new BitSet(new long[]{0x0000000008800002L});
-	public static final BitSet FOLLOW_27_in_multExpr421 = new BitSet(new long[]{0x0000000004206400L});
-	public static final BitSet FOLLOW_signExpr_in_multExpr427 = new BitSet(new long[]{0x0000000008800002L});
-	public static final BitSet FOLLOW_primaryExpr_in_signExpr449 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_26_in_signExpr456 = new BitSet(new long[]{0x0000000000206400L});
-	public static final BitSet FOLLOW_primaryExpr_in_signExpr458 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_Integer_constant_in_primaryExpr470 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_Floating_point_constant_in_primaryExpr477 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_Identifier_in_primaryExpr484 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_21_in_primaryExpr491 = new BitSet(new long[]{0x0000000004206400L});
-	public static final BitSet FOLLOW_arith_expression_in_primaryExpr493 = new BitSet(new long[]{0x0000000000400000L});
-	public static final BitSet FOLLOW_22_in_primaryExpr495 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_VOID_in_program36 = new BitSet(new long[]{0x0000000000008000L});
+	public static final BitSet FOLLOW_MAIN_in_program38 = new BitSet(new long[]{0x0000000000200000L});
+	public static final BitSet FOLLOW_21_in_program40 = new BitSet(new long[]{0x0000000000400000L});
+	public static final BitSet FOLLOW_22_in_program42 = new BitSet(new long[]{0x0000000040000000L});
+	public static final BitSet FOLLOW_30_in_program63 = new BitSet(new long[]{0x0000000080003B00L});
+	public static final BitSet FOLLOW_declarations_in_program77 = new BitSet(new long[]{0x0000000080002A00L});
+	public static final BitSet FOLLOW_statements_in_program90 = new BitSet(new long[]{0x0000000080000000L});
+	public static final BitSet FOLLOW_31_in_program100 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_type_in_declarations127 = new BitSet(new long[]{0x0000000000002000L});
+	public static final BitSet FOLLOW_Identifier_in_declarations129 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_28_in_declarations131 = new BitSet(new long[]{0x0000000000001100L});
+	public static final BitSet FOLLOW_declarations_in_declarations133 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_INT_in_type171 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_FLOAT_in_type181 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_statement_in_statements191 = new BitSet(new long[]{0x0000000000002A00L});
+	public static final BitSet FOLLOW_statements_in_statements193 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_assign_stmt_in_statement223 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_28_in_statement225 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_if_stmt_in_statement238 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_func_no_return_stmt_in_statement251 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_28_in_statement253 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_for_stmt_in_statement266 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_FOR_in_for_stmt283 = new BitSet(new long[]{0x0000000000200000L});
+	public static final BitSet FOLLOW_21_in_for_stmt285 = new BitSet(new long[]{0x0000000000002000L});
+	public static final BitSet FOLLOW_assign_stmt_in_for_stmt287 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_28_in_for_stmt289 = new BitSet(new long[]{0x0000000004306400L});
+	public static final BitSet FOLLOW_cond_expression_in_for_stmt309 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_28_in_for_stmt311 = new BitSet(new long[]{0x0000000000002000L});
+	public static final BitSet FOLLOW_assign_stmt_in_for_stmt319 = new BitSet(new long[]{0x0000000000400000L});
+	public static final BitSet FOLLOW_22_in_for_stmt327 = new BitSet(new long[]{0x0000000040000000L});
+	public static final BitSet FOLLOW_block_stmt_in_for_stmt338 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_if_then_stmt_in_if_stmt374 = new BitSet(new long[]{0x0000000000000040L});
+	public static final BitSet FOLLOW_if_else_stmt_in_if_stmt376 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_IF_in_if_then_stmt414 = new BitSet(new long[]{0x0000000000200000L});
+	public static final BitSet FOLLOW_21_in_if_then_stmt416 = new BitSet(new long[]{0x0000000004306400L});
+	public static final BitSet FOLLOW_cond_expression_in_if_then_stmt418 = new BitSet(new long[]{0x0000000000400000L});
+	public static final BitSet FOLLOW_22_in_if_then_stmt420 = new BitSet(new long[]{0x0000000040000000L});
+	public static final BitSet FOLLOW_block_stmt_in_if_then_stmt422 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_ELSE_in_if_else_stmt456 = new BitSet(new long[]{0x0000000040000000L});
+	public static final BitSet FOLLOW_block_stmt_in_if_else_stmt458 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_30_in_block_stmt499 = new BitSet(new long[]{0x0000000080002A00L});
+	public static final BitSet FOLLOW_statements_in_block_stmt501 = new BitSet(new long[]{0x0000000080000000L});
+	public static final BitSet FOLLOW_31_in_block_stmt503 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_Identifier_in_assign_stmt515 = new BitSet(new long[]{0x0000000020000000L});
+	public static final BitSet FOLLOW_29_in_assign_stmt517 = new BitSet(new long[]{0x0000000004306400L});
+	public static final BitSet FOLLOW_arith_expression_in_assign_stmt519 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_Identifier_in_func_no_return_stmt559 = new BitSet(new long[]{0x0000000000200000L});
+	public static final BitSet FOLLOW_21_in_func_no_return_stmt561 = new BitSet(new long[]{0x0000000004326400L});
+	public static final BitSet FOLLOW_argument_in_func_no_return_stmt563 = new BitSet(new long[]{0x0000000000400000L});
+	public static final BitSet FOLLOW_22_in_func_no_return_stmt565 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_arg_in_argument593 = new BitSet(new long[]{0x0000000002000002L});
+	public static final BitSet FOLLOW_25_in_argument596 = new BitSet(new long[]{0x0000000004326400L});
+	public static final BitSet FOLLOW_arg_in_argument598 = new BitSet(new long[]{0x0000000002000002L});
+	public static final BitSet FOLLOW_arith_expression_in_arg616 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_STRING_LITERAL_in_arg623 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_arith_expression_in_cond_expression661 = new BitSet(new long[]{0x0000000000010002L});
+	public static final BitSet FOLLOW_RelationOP_in_cond_expression691 = new BitSet(new long[]{0x0000000004306400L});
+	public static final BitSet FOLLOW_arith_expression_in_cond_expression693 = new BitSet(new long[]{0x0000000000010002L});
+	public static final BitSet FOLLOW_multExpr_in_arith_expression748 = new BitSet(new long[]{0x0000000005000002L});
+	public static final BitSet FOLLOW_24_in_arith_expression771 = new BitSet(new long[]{0x0000000004306400L});
+	public static final BitSet FOLLOW_multExpr_in_arith_expression775 = new BitSet(new long[]{0x0000000005000002L});
+	public static final BitSet FOLLOW_26_in_arith_expression821 = new BitSet(new long[]{0x0000000004306400L});
+	public static final BitSet FOLLOW_multExpr_in_arith_expression825 = new BitSet(new long[]{0x0000000005000002L});
+	public static final BitSet FOLLOW_signExpr_in_multExpr911 = new BitSet(new long[]{0x0000000008800002L});
+	public static final BitSet FOLLOW_23_in_multExpr927 = new BitSet(new long[]{0x0000000004306400L});
+	public static final BitSet FOLLOW_signExpr_in_multExpr931 = new BitSet(new long[]{0x0000000008800002L});
+	public static final BitSet FOLLOW_27_in_multExpr970 = new BitSet(new long[]{0x0000000004306400L});
+	public static final BitSet FOLLOW_signExpr_in_multExpr974 = new BitSet(new long[]{0x0000000008800002L});
+	public static final BitSet FOLLOW_primaryExpr_in_signExpr1030 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_26_in_signExpr1046 = new BitSet(new long[]{0x0000000000306400L});
+	public static final BitSet FOLLOW_primaryExpr_in_signExpr1050 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_Integer_constant_in_primaryExpr1084 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_Floating_point_constant_in_primaryExpr1108 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_Identifier_in_primaryExpr1136 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_20_in_primaryExpr1153 = new BitSet(new long[]{0x0000000000002000L});
+	public static final BitSet FOLLOW_Identifier_in_primaryExpr1155 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_21_in_primaryExpr1163 = new BitSet(new long[]{0x0000000004306400L});
+	public static final BitSet FOLLOW_arith_expression_in_primaryExpr1165 = new BitSet(new long[]{0x0000000000400000L});
+	public static final BitSet FOLLOW_22_in_primaryExpr1167 = new BitSet(new long[]{0x0000000000000002L});
 }
