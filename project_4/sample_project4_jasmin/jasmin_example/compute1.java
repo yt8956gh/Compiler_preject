@@ -1,10 +1,7 @@
 public class compute1{
     public static void main(String[] args) {
-        int num1;
-        float b;
-
-        b = 22;
-        num1 = (int) (b * 3.14);
+        int a = 100;
+        System.out.println("321423423");
     }
 }
 

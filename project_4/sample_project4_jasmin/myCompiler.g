@@ -1,7 +1,7 @@
 grammar myCompiler;
 
 options {
-   language = Java;
+	language = Java;
 }
 
 @header {
@@ -81,28 +81,20 @@ options {
     }			
 }
 
-program: VOID MAIN '(' ')'
-        {
+program:
+	VOID MAIN '(' ')' {
            /* Output function prologue */
            prologue();
-        }
-
-        '{' 
-           declarations
-           statements
-        '}'
-        {
+        } '{' declarations statements '}' {
 		   if (TRACEON)
 		      System.out.println("VOID MAIN () {declarations statements}");
 
            /* output function epilogue */	  
            epilogue();
-        }
-        ;
+        };
 
-
-declarations: type Identifier ';' declarations
-      {
+declarations:
+	type Identifier ';' declarations {
 			     if (TRACEON)
 	                System.out.println("declarations: type Identifier : declarations");
 
@@ -121,59 +113,37 @@ declarations: type Identifier ';' declarations
 				 storageIndex = storageIndex + 1;
              symtab.put($Identifier.text, the_list);
       }
-      | 
-		{
+	| {
 			     if (TRACEON)
                     System.out.println("declarations: ");
 		};
 
-
 type
-returns [Type attr_type]
-    : INT { if (TRACEON) System.out.println("type: INT"); attr_type=Type.INT; }
-    | FLOAT {if (TRACEON) System.out.println("type: FLOAT"); attr_type=Type.FLOAT; }
-	;
+	returns[Type attr_type]:
+	INT { if (TRACEON) System.out.println("type: INT"); attr_type=Type.INT; }
+	| FLOAT {if (TRACEON) System.out.println("type: FLOAT"); attr_type=Type.FLOAT; };
 
-statements:statement statements
-          |
-          ;
+statements: statement statements |;
 
-statement: assign_stmt ';'
-         | if_stmt
-         | func_no_return_stmt ';'
-         | for_stmt
-         ;
+statement:
+	assign_stmt ';'
+	| if_stmt
+	| func_no_return_stmt ';'
+	| for_stmt;
 
-for_stmt: FOR '(' assign_stmt ';'
-                  cond_expression ';'
-				  assign_stmt
-			   ')'
-			      block_stmt
-        ;
-		 
-		 
-if_stmt
-            : if_then_stmt if_else_stmt
-            ;
+for_stmt:
+	FOR '(' assign_stmt ';' cond_expression ';' assign_stmt ')' block_stmt;
 
-	   
-if_then_stmt
-            : IF '(' cond_expression ')' block_stmt
-            ;
+if_stmt: if_then_stmt if_else_stmt;
 
+if_then_stmt: IF '(' cond_expression ')' block_stmt;
 
-if_else_stmt
-            : ELSE block_stmt
-            |
-            ;
+if_else_stmt: ELSE block_stmt |;
 
-				  
-block_stmt: '{' statements '}'
-	  ;
+block_stmt: '{' statements '}';
 
-
-assign_stmt: Identifier '=' arith_expression
-             {
+assign_stmt:
+	Identifier '=' arith_expression {
 			   Type the_type;
 			   int the_mem;
 			   
@@ -196,76 +166,163 @@ assign_stmt: Identifier '=' arith_expression
 			              TextCode.add("fstore " + the_mem);
 			              break;
 			   }
-             }
-           ;
+             };
 
-		   
-func_no_return_stmt: Identifier '(' argument ')'
-                   ;
+func_no_return_stmt
+	@init {
+	List<Float> args=new ArrayList<Float>(); 
+	List<String> refs=new ArrayList<String>();
+   boolean isPrintf = false;
+   String tmp = null;
+}:
+	Identifier '(' STRING_LITERAL {
+	   if($Identifier.text.equals("printf"))
+		{
+            isPrintf = true;
+				tmp = new String($STRING_LITERAL.text);
+				tmp = tmp.substring(1,tmp.length()-1 ); //remove quotation mark
 
+            int retD = tmp.indexOf("\%d");
+				int retF = tmp.indexOf("\%f");
+            int retN = tmp.indexOf("\\n");
 
-argument: arg (',' arg)*
-        ;
+            if(retN==-1 && retD==-1 && retF==-1){
+                  TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
+                  TextCode.add("ldc \""+tmp+"\"");
+                  TextCode.add("invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V");
+            }
+		}
+} (
+		',' arg {
+                  int retD=0, retF=0, retN=0;
+						retD = tmp.indexOf("\%d");
+						retF = tmp.indexOf("\%f");
+                  retN = tmp.indexOf("\\n");
 
-arg: arith_expression
-   | STRING_LITERAL
-   ;
-		   
+                  System.out.println("RETn: "+ retN);
+
+						if(TRACEON)
+						{
+								System.out.println("retD: "+retD);
+								System.out.println("retF: "+retF);
+						}
+
+                  while(retN!=-1 && (retD==-1||retN<retD)&&(retF==-1||retN<retF)) //newline
+                  {
+                        TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
+                        TextCode.add("ldc \""+tmp.substring(0,retN)+"\"");
+                        TextCode.add("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
+
+                        tmp = tmp.substring(retN+2, tmp.length());
+                        System.out.println("NewLINE REM: "+tmp);
+
+                        retD = tmp.indexOf("\%d");
+						      retF = tmp.indexOf("\%f");
+                        retN = tmp.indexOf("\\n");
+                  }
+
+						if(retD!=-1 && (retF==-1 || retD<retF)) // int
+						{
+                           TextCode.add("istore 99");
+
+                           TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
+                           TextCode.add("ldc \""+tmp.substring(0,retD)+"\"");
+                           TextCode.add("invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V");
+
+                           System.out.println("OUT: "+tmp.substring(0,retD));
+
+                           TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
+                           TextCode.add("iload 99");
+                           TextCode.add("invokevirtual java/io/PrintStream/print(I)V"); // for integer
+
+                           tmp = tmp.substring(retD+2, tmp.length());
+                           System.out.println("REM: "+tmp);
+						}
+						else	if(retF!=-1 && (retD==-1 || retF<retD)) //float
+						{
+                           TextCode.add("fstore 99");
+
+                           TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
+                           TextCode.add("ldc \""+tmp.substring(0,retF)+"\"");
+                           TextCode.add("invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V");
+
+                           System.out.println("OUT: "+tmp.substring(0,retF));
+
+                           TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
+                           TextCode.add("fload 99");
+                           TextCode.add("invokevirtual java/io/PrintStream/print(F)V"); // for integer
+
+                           tmp = tmp.substring(retF+2, tmp.length());
+                           System.out.println("REM: "+tmp);
+						}
+						else{
+							    System.out.println("ERROR: Number of argument in printf is too more.");
+						}
+         }
+	)* ')' {
+
+      int retN=0;
+      retN = tmp.indexOf("\\n");
+      while(retN!=-1) //newline
+      {
+               TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
+               TextCode.add("ldc \""+tmp.substring(0,retN)+"\"");
+               TextCode.add("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
+
+               tmp = tmp.substring(retN+2, tmp.length());
+               System.out.println("NewLINE REM: "+tmp);
+               
+               retN = tmp.indexOf("\\n");
+       }
+   };
+
+argument: arg (',' arg)*;
+
+arg: arith_expression;
+
 cond_expression
-returns [boolean truth]
-               : a=arith_expression
-			     {
+	returns[boolean truth]:
+	a = arith_expression {
 				    if ($a.attr_type.ordinal() != 0)
 					   truth = true;
 					else
 					   truth = false;
-				 }
-                 (RelationOP arith_expression)*
-               ;
+				 } (RelationOP arith_expression)*;
 
-			   
 arith_expression
-returns [Type attr_type]
-                : a=multExpr { $attr_type = $a.attr_type; }
-                 ( '+' b=multExpr
-                       {
+	returns[Type attr_type]:
+	a = multExpr { $attr_type = $a.attr_type; } (
+		'+' b = multExpr {
                               if (($attr_type == Type.INT) &&($b.attr_type == Type.INT))  TextCode.add("iadd");
                               else TextCode.add("fadd");
                        }
-                 | '-' c=multExpr
-                      {
+		| '-' c = multExpr {
                               if (($attr_type == Type.INT) &&($c.attr_type == Type.INT))  TextCode.add("isub");
                               else TextCode.add("fsub");
                       }
-                 )*
-                 ;
+	)*;
 
 multExpr
-returns [Type attr_type]
-          : a=signExpr { $attr_type=$a.attr_type; }
-          ( '*' b=signExpr
-                       {
+	returns[Type attr_type]:
+	a = signExpr { $attr_type=$a.attr_type; } (
+		'*' b = signExpr {
                               if (($attr_type == Type.INT) &&($b.attr_type == Type.INT))  TextCode.add("imul");
                               else TextCode.add("fmul");
                        }
-          | '/' c=signExpr
-                      {
+		| '/' c = signExpr {
                               if (($attr_type == Type.INT) &&($c.attr_type == Type.INT))  TextCode.add("idiv");
                               else TextCode.add("fdiv");
                       }
-	  )*
-	  ;
+	)*;
 
 signExpr
-returns [Type attr_type]
-        : a=primaryExpr[1] { $attr_type=$a.attr_type;} 
-        | '-' b=primaryExpr[-1] { $attr_type=$b.attr_type;}
-	;
-		  
+	returns[Type attr_type]:
+	a = primaryExpr[1] { $attr_type=$a.attr_type;}
+	| '-' b = primaryExpr[-1] { $attr_type=$b.attr_type;};
+
 primaryExpr[int posneg]
-returns [Type attr_type] 
-           : Integer_constant
-		     {
+	returns[Type attr_type]:
+	Integer_constant {
 			    $attr_type = Type.INT;
 
              System.out.println("posneg: "+posneg);
@@ -276,8 +333,7 @@ returns [Type attr_type]
             if($posneg>0) TextCode.add("ldc " + $Integer_constant.text);
             else TextCode.add("ldc -" + $Integer_constant.text);
 			 }
-           | Floating_point_constant
-           {
+	| Floating_point_constant {
               
 			    $attr_type = Type.FLOAT;
 				
@@ -287,8 +343,7 @@ returns [Type attr_type]
             if($posneg>0) TextCode.add("ldc " + $Floating_point_constant.text);
             else TextCode.add("ldc -" + $Floating_point_constant.text);
            }
-           | Identifier
-		     {
+	| Identifier {
 			    // get type information from symtab.
 			    $attr_type = (Type) symtab.get($Identifier.text).get(0);
 				
@@ -302,14 +357,12 @@ returns [Type attr_type]
 				          break;
 				}
 			 }
-	   | '&' Identifier
-	   | '(' arith_expression ')'
-           ;
+	| '&' Identifier
+	| '(' arith_expression ')';
 
-		   
 /* description of the tokens */
-FLOAT:'float';
-INT:'int';
+FLOAT: 'float';
+INT: 'int';
 CHAR: 'char';
 
 MAIN: 'main';
@@ -318,21 +371,21 @@ IF: 'if';
 ELSE: 'else';
 FOR: 'for';
 
-RelationOP: '>' |'>=' | '<' | '<=' | '==' | '!=';
+RelationOP: '>' | '>=' | '<' | '<=' | '==' | '!=';
 
-Identifier:('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
-Integer_constant:'0'..'9'+;
-Floating_point_constant:'0'..'9'+ '.' '0'..'9'+;
+Identifier: ('a' ..'z' | 'A' ..'Z' | '_') (
+		'a' ..'z'
+		| 'A' ..'Z'
+		| '0' ..'9'
+		| '_'
+	)*;
+Integer_constant: '0' ..'9'+;
+Floating_point_constant: '0' ..'9'+ '.' '0' ..'9'+;
 
-STRING_LITERAL
-    :  '"' ( EscapeSequence | ~('\\'|'"') )* '"'
-    ;
+STRING_LITERAL: '"' ( EscapeSequence | ~('\\' | '"'))* '"';
 
-WS:( ' ' | '\t' | '\r' | '\n' ) {$channel=HIDDEN;};
-COMMENT:'/*' .* '*/' {$channel=HIDDEN;};
+WS: ( ' ' | '\t' | '\r' | '\n') {$channel=HIDDEN;};
+COMMENT: '/*' .* '*/' {$channel=HIDDEN;};
 
-
-fragment
-EscapeSequence
-    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
-    ;
+fragment EscapeSequence:
+	'\\' ('b' | 't' | 'n' | 'f' | 'r' | '\"' | '\'' | '\\');
