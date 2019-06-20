@@ -9,6 +9,14 @@ void main()
    b = a + 100 + 123;
 
    printf("Winnie the pooh is cute\nb is %d \nThere is float whose value is %f\nLALALA\n", b, 34.6);
-   printf("a is %d\n", a)
-   printf("This sentence is pure string\n");
+   printf("a is %d\n", a);
+   printf("This sentence is a pure string\n");
+
+   if(1<a)
+   {
+      printf("In If Block\n");
+   }
+   else{
+      printf("In Else Block\n");
+   }
 }

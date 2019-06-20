@@ -60,7 +60,24 @@ getstatic java/lang/System/out Ljava/io/PrintStream;
 ldc ""
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 getstatic java/lang/System/out Ljava/io/PrintStream;
-ldc "This sentence is pure string"
+ldc "This sentence is a pure string"
 invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+ldc 1
+i2f
+fstore 97
+iload 1
+i2f
+fload 97
+fcmpl
+ifle elseLabel0
+getstatic java/lang/System/out Ljava/io/PrintStream;
+ldc "In If Block"
+invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+goto endLabel1
+elseLabel0:
+getstatic java/lang/System/out Ljava/io/PrintStream;
+ldc "In Else Block"
+invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+endLabel1:
 return
 .end method
