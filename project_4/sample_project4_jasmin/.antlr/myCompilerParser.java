@@ -608,7 +608,30 @@ public class myCompilerParser extends Parser {
 			setState(97);
 			match(T__1);
 
-					TextCode.add("ifle elseLabel" + String.valueOf(elseLabel));
+					if(((If_then_stmtContext)_localctx).cond_expression.op.equals("=="))
+					{
+							TextCode.add("ifne elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(((If_then_stmtContext)_localctx).cond_expression.op.equals("!="))
+					{
+							TextCode.add("ifeq elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(((If_then_stmtContext)_localctx).cond_expression.op.equals("<="))
+					{
+							TextCode.add("iflt elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(((If_then_stmtContext)_localctx).cond_expression.op.equals(">="))
+					{
+							TextCode.add("ifgt elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(((If_then_stmtContext)_localctx).cond_expression.op.equals("<"))
+					{
+							TextCode.add("ifle elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(((If_then_stmtContext)_localctx).cond_expression.op.equals(">"))
+					{
+							TextCode.add("ifge elseLabel" + String.valueOf(elseLabel));
+					}
 				
 			setState(99);
 			block_stmt();
@@ -838,14 +861,13 @@ public class myCompilerParser extends Parser {
 				arg();
 
 								int retD=0, retF=0, retN=0;
-										retD = tmp.indexOf("\%d");
-										retF = tmp.indexOf("\%f");
+								retD = tmp.indexOf("\%d");
+								retF = tmp.indexOf("\%f");
 								retN = tmp.indexOf("\\n");
-
-								System.out.println("RETn: "+ retN);
 
 										if(TRACEON)
 										{
+												System.out.println("RETn: "+ retN);
 												System.out.println("retD: "+retD);
 												System.out.println("retF: "+retF);
 										}
@@ -857,7 +879,7 @@ public class myCompilerParser extends Parser {
 										TextCode.add("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
 
 										tmp = tmp.substring(retN+2, tmp.length());
-										System.out.println("NewLINE REM: "+tmp);
+										if(TRACEON) System.out.println("NewLINE REM: "+tmp);
 
 										retD = tmp.indexOf("\%d");
 											retF = tmp.indexOf("\%f");
@@ -872,14 +894,14 @@ public class myCompilerParser extends Parser {
 											TextCode.add("ldc \""+tmp.substring(0,retD)+"\"");
 											TextCode.add("invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V");
 
-											System.out.println("OUT: "+tmp.substring(0,retD));
+											if(TRACEON) System.out.println("OUT: "+tmp.substring(0,retD));
 
 											TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
 											TextCode.add("iload 99");
 											TextCode.add("invokevirtual java/io/PrintStream/print(I)V"); // for integer
 
 											tmp = tmp.substring(retD+2, tmp.length());
-											System.out.println("REM: "+tmp);
+											if(TRACEON) System.out.println("REM: "+tmp);
 										}
 										else	if(retF!=-1 && (retD==-1 || retF<retD)) //float
 										{
@@ -889,14 +911,14 @@ public class myCompilerParser extends Parser {
 											TextCode.add("ldc \""+tmp.substring(0,retF)+"\"");
 											TextCode.add("invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V");
 
-											System.out.println("OUT: "+tmp.substring(0,retF));
+											if(TRACEON) System.out.println("OUT: "+tmp.substring(0,retF));
 
 											TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
 											TextCode.add("fload 99");
 											TextCode.add("invokevirtual java/io/PrintStream/print(F)V"); // for integer
 
 											tmp = tmp.substring(retF+2, tmp.length());
-											System.out.println("REM: "+tmp);
+											if(TRACEON) System.out.println("REM: "+tmp);
 										}
 										else{
 												System.out.println("ERROR: Number of argument in printf is too more.");
@@ -921,7 +943,7 @@ public class myCompilerParser extends Parser {
 							TextCode.add("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
 
 							tmp = tmp.substring(retN+2, tmp.length());
-							System.out.println("NewLINE REM: "+tmp);
+							if(TRACEON) System.out.println("NewLINE REM: "+tmp);
 							
 							retN = tmp.indexOf("\\n");
 					}
@@ -1022,7 +1044,7 @@ public class myCompilerParser extends Parser {
 	}
 
 	public static class Cond_expressionContext extends ParserRuleContext {
-		public boolean truth;
+		public String op;
 		public Arith_expressionContext a;
 		public Arith_expressionContext b;
 		public List<Arith_expressionContext> arith_expression() {
@@ -1075,12 +1097,35 @@ public class myCompilerParser extends Parser {
 							if((((Cond_expressionContext)_localctx).RelationOP!=null?((Cond_expressionContext)_localctx).RelationOP.getText():null).equals("<"))
 							{
 								TextCode.add("fcmpl");
+								op = "<";
 							}
 							else if((((Cond_expressionContext)_localctx).RelationOP!=null?((Cond_expressionContext)_localctx).RelationOP.getText():null).equals(">")) // 1 is in stack
 							{
 								TextCode.add("fcmpl");
-								TextCode.add("ineg");
+								op = ">";
+								//TextCode.add("ineg");
 							}
+							else if((((Cond_expressionContext)_localctx).RelationOP!=null?((Cond_expressionContext)_localctx).RelationOP.getText():null).equals("=="))
+							{
+								 TextCode.add("fcmpl");
+								 op = "==";
+							}
+							else if((((Cond_expressionContext)_localctx).RelationOP!=null?((Cond_expressionContext)_localctx).RelationOP.getText():null).equals("!="))
+							{
+								 TextCode.add("fcmpl");
+								 op = "!=";
+							}
+							else if((((Cond_expressionContext)_localctx).RelationOP!=null?((Cond_expressionContext)_localctx).RelationOP.getText():null).equals("<="))
+							{
+								 TextCode.add("fcmpl");
+								 op = "<=";
+							}
+							else if((((Cond_expressionContext)_localctx).RelationOP!=null?((Cond_expressionContext)_localctx).RelationOP.getText():null).equals(">="))
+							{
+								 TextCode.add("fcmpl");
+								 op = ">=";
+							}
+							
 						
 				}
 				}
@@ -1350,7 +1395,7 @@ public class myCompilerParser extends Parser {
 
 							((PrimaryExprContext)_localctx).attr_type =  Type.INT;
 
-							System.out.println("posneg: "+posneg);
+							if(TRACEON) System.out.println("posneg: "+posneg);
 								
 							// code generation.
 							// push the integer into the operand stack.

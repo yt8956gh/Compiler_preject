@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 myCompiler.g 2019-06-20 12:41:25
+// $ANTLR 3.5.2 myCompiler.g 2019-06-20 15:08:31
 
 	// import packages here.
 	import java.util.HashMap;
@@ -556,6 +556,8 @@ public class myCompilerParser extends Parser {
 		int endLabel = 0;
 
 
+		String cond_expression4 =null;
+
 
 			int elseLabel = labelCount;
 			labelCount++;
@@ -569,12 +571,35 @@ public class myCompilerParser extends Parser {
 			match(input,IF,FOLLOW_IF_in_if_then_stmt188); 
 			match(input,21,FOLLOW_21_in_if_then_stmt190); 
 			pushFollow(FOLLOW_cond_expression_in_if_then_stmt192);
-			cond_expression();
+			cond_expression4=cond_expression();
 			state._fsp--;
 
 			match(input,22,FOLLOW_22_in_if_then_stmt194); 
 
-					TextCode.add("ifle elseLabel" + String.valueOf(elseLabel));
+					if(cond_expression4.equals("=="))
+					{
+							TextCode.add("ifne elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(cond_expression4.equals("!="))
+					{
+							TextCode.add("ifeq elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(cond_expression4.equals("<="))
+					{
+							TextCode.add("iflt elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(cond_expression4.equals(">="))
+					{
+							TextCode.add("ifgt elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(cond_expression4.equals("<"))
+					{
+							TextCode.add("ifle elseLabel" + String.valueOf(elseLabel));
+					}
+					else if(cond_expression4.equals(">"))
+					{
+							TextCode.add("ifge elseLabel" + String.valueOf(elseLabel));
+					}
 				
 			pushFollow(FOLLOW_block_stmt_in_if_then_stmt201);
 			block_stmt();
@@ -601,10 +626,10 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "if_else_stmt"
-	// myCompiler.g:157:1: if_else_stmt : ( ELSE block_stmt |);
+	// myCompiler.g:180:1: if_else_stmt : ( ELSE block_stmt |);
 	public final void if_else_stmt() throws RecognitionException {
 		try {
-			// myCompiler.g:157:13: ( ELSE block_stmt |)
+			// myCompiler.g:180:13: ( ELSE block_stmt |)
 			int alt5=2;
 			int LA5_0 = input.LA(1);
 			if ( (LA5_0==ELSE) ) {
@@ -622,7 +647,7 @@ public class myCompilerParser extends Parser {
 
 			switch (alt5) {
 				case 1 :
-					// myCompiler.g:157:15: ELSE block_stmt
+					// myCompiler.g:180:15: ELSE block_stmt
 					{
 					match(input,ELSE,FOLLOW_ELSE_in_if_else_stmt212); 
 					pushFollow(FOLLOW_block_stmt_in_if_else_stmt214);
@@ -632,7 +657,7 @@ public class myCompilerParser extends Parser {
 					}
 					break;
 				case 2 :
-					// myCompiler.g:157:32: 
+					// myCompiler.g:180:32: 
 					{
 					}
 					break;
@@ -652,11 +677,11 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "block_stmt"
-	// myCompiler.g:159:1: block_stmt : '{' statements '}' ;
+	// myCompiler.g:182:1: block_stmt : '{' statements '}' ;
 	public final void block_stmt() throws RecognitionException {
 		try {
-			// myCompiler.g:159:11: ( '{' statements '}' )
-			// myCompiler.g:159:13: '{' statements '}'
+			// myCompiler.g:182:11: ( '{' statements '}' )
+			// myCompiler.g:182:13: '{' statements '}'
 			{
 			match(input,30,FOLLOW_30_in_block_stmt223); 
 			pushFollow(FOLLOW_statements_in_block_stmt225);
@@ -680,19 +705,19 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "assign_stmt"
-	// myCompiler.g:161:1: assign_stmt : Identifier '=' arith_expression ;
+	// myCompiler.g:184:1: assign_stmt : Identifier '=' arith_expression ;
 	public final void assign_stmt() throws RecognitionException {
-		Token Identifier4=null;
-		Type arith_expression5 =null;
+		Token Identifier5=null;
+		Type arith_expression6 =null;
 
 		try {
-			// myCompiler.g:161:12: ( Identifier '=' arith_expression )
-			// myCompiler.g:162:2: Identifier '=' arith_expression
+			// myCompiler.g:184:12: ( Identifier '=' arith_expression )
+			// myCompiler.g:185:2: Identifier '=' arith_expression
 			{
-			Identifier4=(Token)match(input,Identifier,FOLLOW_Identifier_in_assign_stmt235); 
+			Identifier5=(Token)match(input,Identifier,FOLLOW_Identifier_in_assign_stmt235); 
 			match(input,29,FOLLOW_29_in_assign_stmt237); 
 			pushFollow(FOLLOW_arith_expression_in_assign_stmt239);
-			arith_expression5=arith_expression();
+			arith_expression6=arith_expression();
 			state._fsp--;
 
 
@@ -700,10 +725,10 @@ public class myCompilerParser extends Parser {
 							int the_mem;
 							
 							// get the ID's location and type from symtab.
-							the_type = (Type) symtab.get((Identifier4!=null?Identifier4.getText():null)).get(0);
-							the_mem = (int) symtab.get((Identifier4!=null?Identifier4.getText():null)).get(1);
+							the_type = (Type) symtab.get((Identifier5!=null?Identifier5.getText():null)).get(0);
+							the_mem = (int) symtab.get((Identifier5!=null?Identifier5.getText():null)).get(1);
 							
-							if (the_type != arith_expression5) {
+							if (the_type != arith_expression6) {
 							System.out.println("Type error!\n");
 							System.exit(0);
 							}
@@ -735,10 +760,10 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "func_no_return_stmt"
-	// myCompiler.g:187:1: func_no_return_stmt : Identifier '(' STRING_LITERAL ( ',' arg )* ')' ;
+	// myCompiler.g:210:1: func_no_return_stmt : Identifier '(' STRING_LITERAL ( ',' arg )* ')' ;
 	public final void func_no_return_stmt() throws RecognitionException {
-		Token Identifier6=null;
-		Token STRING_LITERAL7=null;
+		Token Identifier7=null;
+		Token STRING_LITERAL8=null;
 
 
 			List<Float> args=new ArrayList<Float>(); 
@@ -747,17 +772,17 @@ public class myCompilerParser extends Parser {
 			String tmp = null;
 
 		try {
-			// myCompiler.g:193:2: ( Identifier '(' STRING_LITERAL ( ',' arg )* ')' )
-			// myCompiler.g:194:2: Identifier '(' STRING_LITERAL ( ',' arg )* ')'
+			// myCompiler.g:216:2: ( Identifier '(' STRING_LITERAL ( ',' arg )* ')' )
+			// myCompiler.g:217:2: Identifier '(' STRING_LITERAL ( ',' arg )* ')'
 			{
-			Identifier6=(Token)match(input,Identifier,FOLLOW_Identifier_in_func_no_return_stmt255); 
+			Identifier7=(Token)match(input,Identifier,FOLLOW_Identifier_in_func_no_return_stmt255); 
 			match(input,21,FOLLOW_21_in_func_no_return_stmt257); 
-			STRING_LITERAL7=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_func_no_return_stmt259); 
+			STRING_LITERAL8=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_func_no_return_stmt259); 
 
-					if((Identifier6!=null?Identifier6.getText():null).equals("printf"))
+					if((Identifier7!=null?Identifier7.getText():null).equals("printf"))
 					{
 						isPrintf = true;
-							tmp = new String((STRING_LITERAL7!=null?STRING_LITERAL7.getText():null));
+							tmp = new String((STRING_LITERAL8!=null?STRING_LITERAL8.getText():null));
 							tmp = tmp.substring(1,tmp.length()-1 ); //remove quotation mark
 
 						int retD = tmp.indexOf("%d");
@@ -771,7 +796,7 @@ public class myCompilerParser extends Parser {
 						}
 					}
 
-			// myCompiler.g:211:3: ( ',' arg )*
+			// myCompiler.g:234:3: ( ',' arg )*
 			loop6:
 			while (true) {
 				int alt6=2;
@@ -782,7 +807,7 @@ public class myCompilerParser extends Parser {
 
 				switch (alt6) {
 				case 1 :
-					// myCompiler.g:212:3: ',' arg
+					// myCompiler.g:235:3: ',' arg
 					{
 					match(input,25,FOLLOW_25_in_func_no_return_stmt267); 
 					pushFollow(FOLLOW_arg_in_func_no_return_stmt269);
@@ -791,14 +816,13 @@ public class myCompilerParser extends Parser {
 
 
 									int retD=0, retF=0, retN=0;
-											retD = tmp.indexOf("%d");
-											retF = tmp.indexOf("%f");
+									retD = tmp.indexOf("%d");
+									retF = tmp.indexOf("%f");
 									retN = tmp.indexOf("\\n");
-
-									System.out.println("RETn: "+ retN);
 
 											if(TRACEON)
 											{
+													System.out.println("RETn: "+ retN);
 													System.out.println("retD: "+retD);
 													System.out.println("retF: "+retF);
 											}
@@ -810,7 +834,7 @@ public class myCompilerParser extends Parser {
 											TextCode.add("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
 
 											tmp = tmp.substring(retN+2, tmp.length());
-											System.out.println("NewLINE REM: "+tmp);
+											if(TRACEON) System.out.println("NewLINE REM: "+tmp);
 
 											retD = tmp.indexOf("%d");
 												retF = tmp.indexOf("%f");
@@ -825,14 +849,14 @@ public class myCompilerParser extends Parser {
 												TextCode.add("ldc \""+tmp.substring(0,retD)+"\"");
 												TextCode.add("invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V");
 
-												System.out.println("OUT: "+tmp.substring(0,retD));
+												if(TRACEON) System.out.println("OUT: "+tmp.substring(0,retD));
 
 												TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
 												TextCode.add("iload 99");
 												TextCode.add("invokevirtual java/io/PrintStream/print(I)V"); // for integer
 
 												tmp = tmp.substring(retD+2, tmp.length());
-												System.out.println("REM: "+tmp);
+												if(TRACEON) System.out.println("REM: "+tmp);
 											}
 											else	if(retF!=-1 && (retD==-1 || retF<retD)) //float
 											{
@@ -842,14 +866,14 @@ public class myCompilerParser extends Parser {
 												TextCode.add("ldc \""+tmp.substring(0,retF)+"\"");
 												TextCode.add("invokevirtual java/io/PrintStream/print(Ljava/lang/String;)V");
 
-												System.out.println("OUT: "+tmp.substring(0,retF));
+												if(TRACEON) System.out.println("OUT: "+tmp.substring(0,retF));
 
 												TextCode.add("getstatic java/lang/System/out Ljava/io/PrintStream;");
 												TextCode.add("fload 99");
 												TextCode.add("invokevirtual java/io/PrintStream/print(F)V"); // for integer
 
 												tmp = tmp.substring(retF+2, tmp.length());
-												System.out.println("REM: "+tmp);
+												if(TRACEON) System.out.println("REM: "+tmp);
 											}
 											else{
 													System.out.println("ERROR: Number of argument in printf is too more.");
@@ -875,7 +899,7 @@ public class myCompilerParser extends Parser {
 							TextCode.add("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
 
 							tmp = tmp.substring(retN+2, tmp.length());
-							System.out.println("NewLINE REM: "+tmp);
+							if(TRACEON) System.out.println("NewLINE REM: "+tmp);
 							
 							retN = tmp.indexOf("\\n");
 					}
@@ -896,17 +920,17 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "argument"
-	// myCompiler.g:295:1: argument : arg ( ',' arg )* ;
+	// myCompiler.g:317:1: argument : arg ( ',' arg )* ;
 	public final void argument() throws RecognitionException {
 		try {
-			// myCompiler.g:295:9: ( arg ( ',' arg )* )
-			// myCompiler.g:295:11: arg ( ',' arg )*
+			// myCompiler.g:317:9: ( arg ( ',' arg )* )
+			// myCompiler.g:317:11: arg ( ',' arg )*
 			{
 			pushFollow(FOLLOW_arg_in_argument286);
 			arg();
 			state._fsp--;
 
-			// myCompiler.g:295:15: ( ',' arg )*
+			// myCompiler.g:317:15: ( ',' arg )*
 			loop7:
 			while (true) {
 				int alt7=2;
@@ -917,7 +941,7 @@ public class myCompilerParser extends Parser {
 
 				switch (alt7) {
 				case 1 :
-					// myCompiler.g:295:16: ',' arg
+					// myCompiler.g:317:16: ',' arg
 					{
 					match(input,25,FOLLOW_25_in_argument289); 
 					pushFollow(FOLLOW_arg_in_argument291);
@@ -948,11 +972,11 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "arg"
-	// myCompiler.g:297:1: arg : arith_expression ;
+	// myCompiler.g:319:1: arg : arith_expression ;
 	public final void arg() throws RecognitionException {
 		try {
-			// myCompiler.g:297:4: ( arith_expression )
-			// myCompiler.g:297:6: arith_expression
+			// myCompiler.g:319:4: ( arith_expression )
+			// myCompiler.g:319:6: arith_expression
 			{
 			pushFollow(FOLLOW_arith_expression_in_arg300);
 			arith_expression();
@@ -974,12 +998,12 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "cond_expression"
-	// myCompiler.g:299:1: cond_expression returns [boolean truth] : a= arith_expression ( RelationOP b= arith_expression )* ;
-	public final boolean cond_expression() throws RecognitionException {
-		boolean truth = false;
+	// myCompiler.g:321:1: cond_expression returns [String op] : a= arith_expression ( RelationOP b= arith_expression )* ;
+	public final String cond_expression() throws RecognitionException {
+		String op = null;
 
 
-		Token RelationOP8=null;
+		Token RelationOP9=null;
 		Type a =null;
 		Type b =null;
 
@@ -987,8 +1011,8 @@ public class myCompilerParser extends Parser {
 			boolean last_is_int = false;
 
 		try {
-			// myCompiler.g:302:2: (a= arith_expression ( RelationOP b= arith_expression )* )
-			// myCompiler.g:303:2: a= arith_expression ( RelationOP b= arith_expression )*
+			// myCompiler.g:324:2: (a= arith_expression ( RelationOP b= arith_expression )* )
+			// myCompiler.g:325:2: a= arith_expression ( RelationOP b= arith_expression )*
 			{
 			pushFollow(FOLLOW_arith_expression_in_cond_expression319);
 			a=arith_expression();
@@ -999,7 +1023,7 @@ public class myCompilerParser extends Parser {
 
 					TextCode.add("fstore 97");
 				
-			// myCompiler.g:309:2: ( RelationOP b= arith_expression )*
+			// myCompiler.g:331:2: ( RelationOP b= arith_expression )*
 			loop8:
 			while (true) {
 				int alt8=2;
@@ -1010,9 +1034,9 @@ public class myCompilerParser extends Parser {
 
 				switch (alt8) {
 				case 1 :
-					// myCompiler.g:309:3: RelationOP b= arith_expression
+					// myCompiler.g:331:3: RelationOP b= arith_expression
 					{
-					RelationOP8=(Token)match(input,RelationOP,FOLLOW_RelationOP_in_cond_expression328); 
+					RelationOP9=(Token)match(input,RelationOP,FOLLOW_RelationOP_in_cond_expression328); 
 					pushFollow(FOLLOW_arith_expression_in_cond_expression332);
 					b=arith_expression();
 					state._fsp--;
@@ -1021,15 +1045,38 @@ public class myCompilerParser extends Parser {
 								if(b==Type.INT) TextCode.add("i2f");
 								TextCode.add("fload 97");
 
-								if((RelationOP8!=null?RelationOP8.getText():null).equals("<"))
+								if((RelationOP9!=null?RelationOP9.getText():null).equals("<"))
 								{
 									TextCode.add("fcmpl");
+									op = "<";
 								}
-								else if((RelationOP8!=null?RelationOP8.getText():null).equals(">")) // 1 is in stack
+								else if((RelationOP9!=null?RelationOP9.getText():null).equals(">")) // 1 is in stack
 								{
 									TextCode.add("fcmpl");
-									TextCode.add("ineg");
+									op = ">";
+									//TextCode.add("ineg");
 								}
+								else if((RelationOP9!=null?RelationOP9.getText():null).equals("=="))
+								{
+									 TextCode.add("fcmpl");
+									 op = "==";
+								}
+								else if((RelationOP9!=null?RelationOP9.getText():null).equals("!="))
+								{
+									 TextCode.add("fcmpl");
+									 op = "!=";
+								}
+								else if((RelationOP9!=null?RelationOP9.getText():null).equals("<="))
+								{
+									 TextCode.add("fcmpl");
+									 op = "<=";
+								}
+								else if((RelationOP9!=null?RelationOP9.getText():null).equals(">="))
+								{
+									 TextCode.add("fcmpl");
+									 op = ">=";
+								}
+								
 							
 					}
 					break;
@@ -1049,14 +1096,14 @@ public class myCompilerParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
-		return truth;
+		return op;
 	}
 	// $ANTLR end "cond_expression"
 
 
 
 	// $ANTLR start "arith_expression"
-	// myCompiler.g:326:1: arith_expression returns [Type attr_type] : a= multExpr ( '+' b= multExpr | '-' c= multExpr )* ;
+	// myCompiler.g:371:1: arith_expression returns [Type attr_type] : a= multExpr ( '+' b= multExpr | '-' c= multExpr )* ;
 	public final Type arith_expression() throws RecognitionException {
 		Type attr_type = null;
 
@@ -1066,15 +1113,15 @@ public class myCompilerParser extends Parser {
 		Type c =null;
 
 		try {
-			// myCompiler.g:327:25: (a= multExpr ( '+' b= multExpr | '-' c= multExpr )* )
-			// myCompiler.g:328:2: a= multExpr ( '+' b= multExpr | '-' c= multExpr )*
+			// myCompiler.g:372:25: (a= multExpr ( '+' b= multExpr | '-' c= multExpr )* )
+			// myCompiler.g:373:2: a= multExpr ( '+' b= multExpr | '-' c= multExpr )*
 			{
 			pushFollow(FOLLOW_multExpr_in_arith_expression356);
 			a=multExpr();
 			state._fsp--;
 
 			 attr_type = a; 
-			// myCompiler.g:328:46: ( '+' b= multExpr | '-' c= multExpr )*
+			// myCompiler.g:373:46: ( '+' b= multExpr | '-' c= multExpr )*
 			loop9:
 			while (true) {
 				int alt9=3;
@@ -1088,7 +1135,7 @@ public class myCompilerParser extends Parser {
 
 				switch (alt9) {
 				case 1 :
-					// myCompiler.g:329:3: '+' b= multExpr
+					// myCompiler.g:374:3: '+' b= multExpr
 					{
 					match(input,24,FOLLOW_24_in_arith_expression364); 
 					pushFollow(FOLLOW_multExpr_in_arith_expression370);
@@ -1102,7 +1149,7 @@ public class myCompilerParser extends Parser {
 					}
 					break;
 				case 2 :
-					// myCompiler.g:333:5: '-' c= multExpr
+					// myCompiler.g:378:5: '-' c= multExpr
 					{
 					match(input,26,FOLLOW_26_in_arith_expression378); 
 					pushFollow(FOLLOW_multExpr_in_arith_expression384);
@@ -1138,7 +1185,7 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "multExpr"
-	// myCompiler.g:339:1: multExpr returns [Type attr_type] : a= signExpr ( '*' b= signExpr | '/' c= signExpr )* ;
+	// myCompiler.g:384:1: multExpr returns [Type attr_type] : a= signExpr ( '*' b= signExpr | '/' c= signExpr )* ;
 	public final Type multExpr() throws RecognitionException {
 		Type attr_type = null;
 
@@ -1148,15 +1195,15 @@ public class myCompilerParser extends Parser {
 		Type c =null;
 
 		try {
-			// myCompiler.g:340:25: (a= signExpr ( '*' b= signExpr | '/' c= signExpr )* )
-			// myCompiler.g:341:2: a= signExpr ( '*' b= signExpr | '/' c= signExpr )*
+			// myCompiler.g:385:25: (a= signExpr ( '*' b= signExpr | '/' c= signExpr )* )
+			// myCompiler.g:386:2: a= signExpr ( '*' b= signExpr | '/' c= signExpr )*
 			{
 			pushFollow(FOLLOW_signExpr_in_multExpr406);
 			a=signExpr();
 			state._fsp--;
 
 			 attr_type =a; 
-			// myCompiler.g:341:44: ( '*' b= signExpr | '/' c= signExpr )*
+			// myCompiler.g:386:44: ( '*' b= signExpr | '/' c= signExpr )*
 			loop10:
 			while (true) {
 				int alt10=3;
@@ -1170,7 +1217,7 @@ public class myCompilerParser extends Parser {
 
 				switch (alt10) {
 				case 1 :
-					// myCompiler.g:342:3: '*' b= signExpr
+					// myCompiler.g:387:3: '*' b= signExpr
 					{
 					match(input,23,FOLLOW_23_in_multExpr414); 
 					pushFollow(FOLLOW_signExpr_in_multExpr420);
@@ -1184,7 +1231,7 @@ public class myCompilerParser extends Parser {
 					}
 					break;
 				case 2 :
-					// myCompiler.g:346:5: '/' c= signExpr
+					// myCompiler.g:391:5: '/' c= signExpr
 					{
 					match(input,27,FOLLOW_27_in_multExpr428); 
 					pushFollow(FOLLOW_signExpr_in_multExpr434);
@@ -1220,7 +1267,7 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "signExpr"
-	// myCompiler.g:352:1: signExpr returns [Type attr_type] : (a= primaryExpr[1] | '-' b= primaryExpr[-1] );
+	// myCompiler.g:397:1: signExpr returns [Type attr_type] : (a= primaryExpr[1] | '-' b= primaryExpr[-1] );
 	public final Type signExpr() throws RecognitionException {
 		Type attr_type = null;
 
@@ -1229,7 +1276,7 @@ public class myCompilerParser extends Parser {
 		Type b =null;
 
 		try {
-			// myCompiler.g:353:25: (a= primaryExpr[1] | '-' b= primaryExpr[-1] )
+			// myCompiler.g:398:25: (a= primaryExpr[1] | '-' b= primaryExpr[-1] )
 			int alt11=2;
 			int LA11_0 = input.LA(1);
 			if ( (LA11_0==Floating_point_constant||(LA11_0 >= Identifier && LA11_0 <= Integer_constant)||(LA11_0 >= 20 && LA11_0 <= 21)) ) {
@@ -1247,7 +1294,7 @@ public class myCompilerParser extends Parser {
 
 			switch (alt11) {
 				case 1 :
-					// myCompiler.g:354:2: a= primaryExpr[1]
+					// myCompiler.g:399:2: a= primaryExpr[1]
 					{
 					pushFollow(FOLLOW_primaryExpr_in_signExpr456);
 					a=primaryExpr(1);
@@ -1257,7 +1304,7 @@ public class myCompilerParser extends Parser {
 					}
 					break;
 				case 2 :
-					// myCompiler.g:355:4: '-' b= primaryExpr[-1]
+					// myCompiler.g:400:4: '-' b= primaryExpr[-1]
 					{
 					match(input,26,FOLLOW_26_in_signExpr464); 
 					pushFollow(FOLLOW_primaryExpr_in_signExpr470);
@@ -1284,17 +1331,17 @@ public class myCompilerParser extends Parser {
 
 
 	// $ANTLR start "primaryExpr"
-	// myCompiler.g:357:1: primaryExpr[int posneg] returns [Type attr_type] : ( Integer_constant | Floating_point_constant | Identifier | '&' Identifier | '(' arith_expression ')' );
+	// myCompiler.g:402:1: primaryExpr[int posneg] returns [Type attr_type] : ( Integer_constant | Floating_point_constant | Identifier | '&' Identifier | '(' arith_expression ')' );
 	public final Type primaryExpr(int posneg) throws RecognitionException {
 		Type attr_type = null;
 
 
-		Token Integer_constant9=null;
-		Token Floating_point_constant10=null;
-		Token Identifier11=null;
+		Token Integer_constant10=null;
+		Token Floating_point_constant11=null;
+		Token Identifier12=null;
 
 		try {
-			// myCompiler.g:358:25: ( Integer_constant | Floating_point_constant | Identifier | '&' Identifier | '(' arith_expression ')' )
+			// myCompiler.g:403:25: ( Integer_constant | Floating_point_constant | Identifier | '&' Identifier | '(' arith_expression ')' )
 			int alt12=5;
 			switch ( input.LA(1) ) {
 			case Integer_constant:
@@ -1329,26 +1376,26 @@ public class myCompilerParser extends Parser {
 			}
 			switch (alt12) {
 				case 1 :
-					// myCompiler.g:359:2: Integer_constant
+					// myCompiler.g:404:2: Integer_constant
 					{
-					Integer_constant9=(Token)match(input,Integer_constant,FOLLOW_Integer_constant_in_primaryExpr486); 
+					Integer_constant10=(Token)match(input,Integer_constant,FOLLOW_Integer_constant_in_primaryExpr486); 
 
 								attr_type = Type.INT;
 
-								System.out.println("posneg: "+posneg);
+								if(TRACEON) System.out.println("posneg: "+posneg);
 									
 								// code generation.
 								// push the integer into the operand stack.
 
-								if(posneg>0) TextCode.add("ldc " + (Integer_constant9!=null?Integer_constant9.getText():null));
-								else TextCode.add("ldc -" + (Integer_constant9!=null?Integer_constant9.getText():null));
+								if(posneg>0) TextCode.add("ldc " + (Integer_constant10!=null?Integer_constant10.getText():null));
+								else TextCode.add("ldc -" + (Integer_constant10!=null?Integer_constant10.getText():null));
 								
 					}
 					break;
 				case 2 :
-					// myCompiler.g:370:4: Floating_point_constant
+					// myCompiler.g:415:4: Floating_point_constant
 					{
-					Floating_point_constant10=(Token)match(input,Floating_point_constant,FOLLOW_Floating_point_constant_in_primaryExpr493); 
+					Floating_point_constant11=(Token)match(input,Floating_point_constant,FOLLOW_Floating_point_constant_in_primaryExpr493); 
 
 								
 								attr_type = Type.FLOAT;
@@ -1356,40 +1403,40 @@ public class myCompilerParser extends Parser {
 								// code generation.
 								// push the Float into the operand stack.
 
-								if(posneg>0) TextCode.add("ldc " + (Floating_point_constant10!=null?Floating_point_constant10.getText():null));
-								else TextCode.add("ldc -" + (Floating_point_constant10!=null?Floating_point_constant10.getText():null));
+								if(posneg>0) TextCode.add("ldc " + (Floating_point_constant11!=null?Floating_point_constant11.getText():null));
+								else TextCode.add("ldc -" + (Floating_point_constant11!=null?Floating_point_constant11.getText():null));
 						
 					}
 					break;
 				case 3 :
-					// myCompiler.g:381:4: Identifier
+					// myCompiler.g:426:4: Identifier
 					{
-					Identifier11=(Token)match(input,Identifier,FOLLOW_Identifier_in_primaryExpr502); 
+					Identifier12=(Token)match(input,Identifier,FOLLOW_Identifier_in_primaryExpr502); 
 
 								// get type information from symtab.
-								attr_type = (Type) symtab.get((Identifier11!=null?Identifier11.getText():null)).get(0);
+								attr_type = (Type) symtab.get((Identifier12!=null?Identifier12.getText():null)).get(0);
 									
 								switch (attr_type) {
 									case INT: 
 											// load the variable into the operand stack.
-											TextCode.add("iload " + symtab.get((Identifier11!=null?Identifier11.getText():null)).get(1));
+											TextCode.add("iload " + symtab.get((Identifier12!=null?Identifier12.getText():null)).get(1));
 											break;
 									case FLOAT:
-											TextCode.add("fload " + symtab.get((Identifier11!=null?Identifier11.getText():null)).get(1));
+											TextCode.add("fload " + symtab.get((Identifier12!=null?Identifier12.getText():null)).get(1));
 											break;
 								}
 						
 					}
 					break;
 				case 4 :
-					// myCompiler.g:396:4: '&' Identifier
+					// myCompiler.g:441:4: '&' Identifier
 					{
 					match(input,20,FOLLOW_20_in_primaryExpr511); 
 					match(input,Identifier,FOLLOW_Identifier_in_primaryExpr513); 
 					}
 					break;
 				case 5 :
-					// myCompiler.g:397:4: '(' arith_expression ')'
+					// myCompiler.g:442:4: '(' arith_expression ')'
 					{
 					match(input,21,FOLLOW_21_in_primaryExpr518); 
 					pushFollow(FOLLOW_arith_expression_in_primaryExpr520);
