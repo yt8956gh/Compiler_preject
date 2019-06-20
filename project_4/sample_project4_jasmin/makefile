@@ -26,7 +26,7 @@ exejasmin:
 	java myResult
 
 clear:
-	rm -f *.class *.tokens *Lexer* *Parser*
+	rm -f *.class *.tokens *Lexer* *Parser* *.j
 
 run:
 	@make clear
